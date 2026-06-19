@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JUGE DE CÔTÉ — Wushu Sanda IWUF 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060810;--s1:#0b0f1a;--s2:#111828;--s3:#192033;
+  --b1:#1d2840;--b2:#263354;
+  --red:#ff2d55;--blue:#0af;--acc:#c9f135;--gold:#ffd60a;
+  --txt:#f0f4ff;--muted:#4a5880;--muted2:#7a8aaa;
+  --font:'IBM Plex Mono',monospace;
+  --disp:'Bebas Neue',sans-serif;
+}
+html,body{height:100%;overflow:hidden;touch-action:manipulation}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1535 0%,transparent 60%),
+                   radial-gradient(ellipse at 80% 100%,#150d20 0%,transparent 60%)}
+
+/* ── LAYOUT ── */
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+header{background:var(--s1);border-bottom:1px solid var(--b1);padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hd-left{display:flex;align-items:center;gap:10px}
+.hd-badge{background:var(--acc);color:#000;font-family:var(--disp);font-size:11px;
+  padding:3px 10px;border-radius:4px;letter-spacing:2px}
+.hd-title{font-family:var(--disp);font-size:16px;letter-spacing:2px;color:var(--txt)}
+.hd-right{display:flex;align-items:center;gap:12px}
+.judge-id{font-size:11px;color:var(--muted2);letter-spacing:1px}
+.round-pill{background:var(--s2);border:1px solid var(--b1);border-radius:20px;
+  padding:4px 14px;font-size:12px;color:var(--acc);font-weight:700;letter-spacing:1px}
+.timer-display{font-family:var(--disp);font-size:22px;letter-spacing:2px;
+  color:var(--txt);min-width:60px;text-align:right}
+.timer-display.danger{color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+#main{flex:1;display:flex;overflow:hidden}
+
+/* ── SCORE COLUMNS ── */
+.col{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.col-red{background:linear-gradient(180deg,rgba(255,45,85,.06) 0%,transparent 40%);
+  border-right:1px solid var(--b1)}
+.col-blue{background:linear-gradient(180deg,rgba(0,170,255,.06) 0%,transparent 40%)}
+
+.col-header{padding:12px 16px 10px;border-bottom:1px solid var(--b1);
+  display:flex;flex-direction:column;align-items:center;gap:4px}
+.col-label{font-family:var(--disp);font-size:28px;letter-spacing:4px}
+.col-label.red{color:var(--red)}
+.col-label.blue{color:var(--blue)}
+.comp-name{font-size:11px;color:var(--muted2);letter-spacing:.5px;text-transform:uppercase}
+.score-display{font-family:var(--disp);font-size:96px;line-height:1;letter-spacing:-4px;
+  text-align:center;padding:8px 0;text-shadow:0 0 40px currentColor}
+.score-display.red{color:var(--red)}
+.score-display.blue{color:var(--blue)}
+.score-total{font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;
+  margin-bottom:6px}
+
+/* ── ACTION BUTTONS ── */
+.actions{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.act-btn{border:none;border-radius:12px;padding:14px 16px;font-family:var(--font);
+  font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;
+  gap:10px;transition:all .1s;text-align:left;letter-spacing:.3px;
+  -webkit-user-select:none;user-select:none;position:relative;overflow:hidden}
+.act-btn::after{content:'';position:absolute;inset:0;border-radius:12px;
+  background:rgba(255,255,255,0);transition:background .15s}
+.act-btn:active::after{background:rgba(255,255,255,.12)}
+
+/* Red buttons */
+.act-btn.r1{background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.25);color:var(--red)}
+.act-btn.r2{background:rgba(255,45,85,.18);border:1px solid rgba(255,45,85,.35);color:var(--red)}
+.act-btn.r-big{background:rgba(255,45,85,.22);border:2px solid rgba(255,45,85,.5);
+  color:var(--red);font-size:14px;padding:18px 16px}
+.act-btn.r1:active,.act-btn.r2:active,.act-btn.r-big:active{background:rgba(255,45,85,.35);transform:scale(.97)}
+
+/* Blue buttons */
+.act-btn.b1{background:rgba(0,170,255,.12);border:1px solid rgba(0,170,255,.25);color:var(--blue)}
+.act-btn.b2{background:rgba(0,170,255,.18);border:1px solid rgba(0,170,255,.35);color:var(--blue)}
+.act-btn.b-big{background:rgba(0,170,255,.22);border:2px solid rgba(0,170,255,.5);
+  color:var(--blue);font-size:14px;padding:18px 16px}
+.act-btn.b1:active,.act-btn.b2:active,.act-btn.b-big:active{background:rgba(0,170,255,.35);transform:scale(.97)}
+
+.btn-pts{font-family:var(--disp);font-size:22px;min-width:30px;line-height:1}
+.btn-icon{font-size:18px;min-width:24px;text-align:center}
+.btn-text{flex:1;line-height:1.3}
+.btn-sub{font-size:10px;opacity:.7;font-weight:400;display:block;margin-top:1px}
+
+.section-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+  padding:6px 4px 2px;border-top:1px solid var(--b1);margin-top:2px}
+
+/* ── DIVIDER ── */
+.divider{width:50px;background:var(--s1);border-left:1px solid var(--b1);
+  border-right:1px solid var(--b1);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;flex-shrink:0;padding:12px 0}
+.div-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--b1);
+  background:transparent;color:var(--muted2);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.div-btn:hover{border-color:var(--acc);color:var(--acc)}
+.div-btn:active{transform:scale(.9)}
+.div-sep{width:1px;height:30px;background:var(--b1)}
+.div-round{font-family:var(--disp);font-size:28px;color:var(--muted);letter-spacing:1px;transform:rotate(-90deg)}
+
+/* ── FOOTER ── */
+footer{background:var(--s1);border-top:1px solid var(--b1);padding:10px 16px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0}
+.verdict-section{display:flex;gap:8px;align-items:center;flex:1}
+.verdict-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.verdict-btn{border:none;border-radius:10px;padding:10px 20px;font-family:var(--disp);
+  font-size:20px;letter-spacing:2px;cursor:pointer;transition:all .15s;flex:1;
+  -webkit-user-select:none;user-select:none}
+.verdict-btn:active{transform:scale(.96)}
+.v-red{background:rgba(255,45,85,.15);border:2px solid rgba(255,45,85,.4);color:var(--red)}
+.v-red.selected{background:rgba(255,45,85,.35);border-color:var(--red);
+  box-shadow:0 0 20px rgba(255,45,85,.4)}
+.v-draw{background:rgba(201,241,53,.1);border:2px solid rgba(201,241,53,.3);color:var(--acc)}
+.v-draw.selected{background:rgba(201,241,53,.25);border-color:var(--acc);
+  box-shadow:0 0 20px rgba(201,241,53,.3)}
+.v-blue{background:rgba(0,170,255,.15);border:2px solid rgba(0,170,255,.4);color:var(--blue)}
+.v-blue.selected{background:rgba(0,170,255,.3);border-color:var(--blue);
+  box-shadow:0 0 20px rgba(0,170,255,.4)}
+
+.submit-btn{background:var(--acc);color:#000;border:none;border-radius:10px;
+  padding:10px 20px;font-family:var(--disp);font-size:18px;letter-spacing:2px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;min-width:120px}
+.submit-btn:active{transform:scale(.97);background:#d4fb3c}
+.submit-btn:disabled{background:var(--b1);color:var(--muted);cursor:not-allowed}
+
+/* ── LOG PANEL ── */
+#log-panel{position:fixed;bottom:0;left:0;right:0;height:0;background:var(--s1);
+  border-top:1px solid var(--b1);overflow:hidden;transition:height .3s;z-index:50}
+#log-panel.open{height:220px}
+.log-head{padding:10px 16px;border-bottom:1px solid var(--b1);display:flex;
+  align-items:center;justify-content:space-between}
+.log-title{font-size:11px;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase}
+.log-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer}
+.log-body{height:calc(100% - 41px);overflow-y:auto;padding:8px 16px}
+.log-entry{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--b2);
+  font-size:11px;align-items:center}
+.log-entry:last-child{border-bottom:none}
+.log-side{min-width:40px;font-weight:700}
+.log-side.red{color:var(--red)}
+.log-side.blue{color:var(--blue)}
+.log-type{flex:1;color:var(--muted2)}
+.log-pts{font-weight:700;color:var(--acc);min-width:30px}
+.log-round{color:var(--muted);font-size:10px;min-width:50px}
+.log-undo{background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;
+  padding:2px 6px;border-radius:4px;border:1px solid rgba(255,45,85,.2)}
+
+/* ── FLASH ANIMATION ── */
+.flash-red{animation:flashR .3s}
+.flash-blue{animation:flashB .3s}
+@keyframes flashR{0%,100%{box-shadow:none}50%{box-shadow:0 0 60px rgba(255,45,85,.6) inset}}
+@keyframes flashB{0%,100%{box-shadow:none}50%{box-shadow:0 0 60px rgba(0,170,255,.6) inset}}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  z-index:100;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--s2);border:1px solid var(--b2);border-radius:16px;
+  width:340px;overflow:hidden;animation:popIn .25s}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--b1);
+  font-family:var(--disp);font-size:18px;letter-spacing:2px;color:var(--acc)}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end}
+.inp{background:var(--s3);border:1px solid var(--b1);border-radius:8px;
+  padding:10px 12px;color:var(--txt);font-family:var(--font);font-size:13px;
+  outline:none;width:100%;margin-bottom:12px}
+.inp:focus{border-color:var(--acc)}
+.lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:4px;display:block}
+.mbtn{border:none;border-radius:8px;padding:10px 18px;font-family:var(--font);
+  font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.mbtn-primary{background:var(--acc);color:#000}
+.mbtn-ghost{background:transparent;color:var(--txt);border:1px solid var(--b1)}
+
+/* ── STATUS SUBMITTED ── */
+.submitted-banner{background:rgba(201,241,53,.1);border:1px solid rgba(201,241,53,.3);
+  border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--acc);animation:fadeSlide .4s}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="hd-left">
+      <div class="hd-badge">SANDA PRO</div>
+      <div class="hd-title">JUGE DE CÔTÉ</div>
+    </div>
+    <div class="hd-right">
+      <span class="judge-id" id="judge-id">JUGE #1</span>
+      <span class="round-pill" id="round-pill">ROUND 1</span>
+      <span class="timer-display" id="timer-disp">2:00</span>
+    </div>
+  </header>
+
+  <div id="main">
+    <!-- RED COLUMN -->
+    <div class="col col-red" id="col-red">
+      <div class="col-header">
+        <div class="col-label red">ROUGE</div>
+        <div class="comp-name" id="red-name">—</div>
+        <div class="score-display red" id="red-score">0</div>
+        <div class="score-total" id="red-total">Total match: 0 pts</div>
+      </div>
+      <div class="actions" id="red-actions">
+        <!-- dynamically filled -->
+      </div>
+    </div>
+
+    <!-- CENTER DIVIDER -->
+    <div class="divider">
+      <button class="div-btn" id="btn-log" title="Journal">📋</button>
+      <div class="div-sep"></div>
+      <div class="div-round" id="div-round">R1</div>
+      <div class="div-sep"></div>
+      <button class="div-btn" id="btn-setup" title="Configuration">⚙️</button>
+    </div>
+
+    <!-- BLUE COLUMN -->
+    <div class="col col-blue" id="col-blue">
+      <div class="col-header">
+        <div class="col-label blue">BLEU</div>
+        <div class="comp-name" id="blue-name">—</div>
+        <div class="score-display blue" id="blue-score">0</div>
+        <div class="score-total" id="blue-total">Total match: 0 pts</div>
+      </div>
+      <div class="actions" id="blue-actions">
+        <!-- dynamically filled -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+      <div class="verdict-label">VERDICT ROUND</div>
+      <div class="verdict-section">
+        <button class="verdict-btn v-red" id="v-red" onclick="setVerdict('red')">ROUGE</button>
+        <button class="verdict-btn v-draw" id="v-draw" onclick="setVerdict('draw')">EX AEQ</button>
+        <button class="verdict-btn v-blue" id="v-blue" onclick="setVerdict('blue')">BLEU</button>
+      </div>
+    </div>
+    <div id="submit-area">
+      <button class="submit-btn" id="btn-submit" disabled onclick="submitVerdict()">
+        SOUMETTRE ↑
+      </button>
+    </div>
+  </footer>
+</div>
+
+<!-- LOG PANEL -->
+<div id="log-panel">
+  <div class="log-head">
+    <span class="log-title">Journal des événements</span>
+    <button class="log-close" onclick="toggleLog()">✕</button>
+  </div>
+  <div class="log-body" id="log-body"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-head">⚙ CONFIGURATION</div>
+    <div class="modal-body">
+      <label class="lbl">Numéro du juge</label>
+      <select class="inp" id="cfg-judge">
+        <option value="1">Juge #1</option>
+        <option value="2">Juge #2</option>
+        <option value="3">Juge #3</option>
+        <option value="4">Juge #4</option>
+        <option value="5">Juge #5</option>
+      </select>
+      <label class="lbl">Nom compétiteur rouge</label>
+      <input class="inp" id="cfg-red" placeholder="Nom Rouge">
+      <label class="lbl">Nom compétiteur bleu</label>
+      <input class="inp" id="cfg-blue" placeholder="Nom Bleu">
+      <label class="lbl">Round actuel</label>
+      <select class="inp" id="cfg-round">
+        <option value="1">Round 1</option>
+        <option value="2">Round 2</option>
+        <option value="3">Round 3</option>
+      </select>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-ghost" onclick="closeSetup()">Annuler</button>
+      <button class="mbtn mbtn-primary" onclick="saveSetup()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// IWUF 2024 SCORING ACTIONS
+// ══════════════════════════════════════════════════════
+const RED_ACTIONS = [
+  {type:"kick_head",   pts:2, icon:"🦵", label:"Pied — Tête",    sub:"Technique de jambe",   cls:"r-big"},
+  {type:"kick_torso",  pts:2, icon:"🦵", label:"Pied — Torse",   sub:"Technique de jambe",   cls:"r2"},
+  {type:"knockdown",   pts:2, icon:"⬇️", label:"Mise au sol",    sub:"Adversaire à terre",   cls:"r2"},
+  {type:"offplatform", pts:2, icon:"🚫", label:"Hors plateforme", sub:"Chute hors leitai",    cls:"r-big"},
+  {type:"punch_head",  pts:1, icon:"👊", label:"Poing — Tête",   sub:"Technique de poing",   cls:"r1"},
+  {type:"punch_torso", pts:1, icon:"👊", label:"Poing — Torse",  sub:"Technique de poing",   cls:"r1"},
+  {type:"kick_thigh",  pts:1, icon:"🦵", label:"Pied — Cuisse",  sub:"Technique de jambe",   cls:"r1"},
+];
+const BLUE_ACTIONS = [
+  {type:"kick_head",   pts:2, icon:"🦵", label:"Pied — Tête",    sub:"Technique de jambe",   cls:"b-big"},
+  {type:"kick_torso",  pts:2, icon:"🦵", label:"Pied — Torse",   sub:"Technique de jambe",   cls:"b2"},
+  {type:"knockdown",   pts:2, icon:"⬇️", label:"Mise au sol",    sub:"Adversaire à terre",   cls:"b2"},
+  {type:"offplatform", pts:2, icon:"🚫", label:"Hors plateforme", sub:"Chute hors leitai",    cls:"b-big"},
+  {type:"punch_head",  pts:1, icon:"👊", label:"Poing — Tête",   sub:"Technique de poing",   cls:"b1"},
+  {type:"punch_torso", pts:1, icon:"👊", label:"Poing — Torse",  sub:"Technique de poing",   cls:"b1"},
+  {type:"kick_thigh",  pts:1, icon:"🦵", label:"Pied — Cuisse",  sub:"Technique de jambe",   cls:"b1"},
+];
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let STATE = {
+  judgeNum: 1,
+  redName: "Compétiteur Rouge",
+  blueName: "Compétiteur Bleu",
+  round: 1,
+  timer: 120,
+  timerRunning: false,
+  timerInterval: null,
+  events: [],       // {side, type, pts, round, time, id}
+  verdict: null,    // 'red'|'blue'|'draw'
+  submitted: false,
+  history: []       // round verdicts submitted
+};
+
+// ══════════════════════════════════════════════════════
+// SCORE CALC
+// ══════════════════════════════════════════════════════
+const calcSide = (side, round) =>
+  STATE.events.filter(e=>e.side===side&&e.round===round).reduce((s,e)=>s+e.pts,0);
+const calcTotal = side =>
+  STATE.events.filter(e=>e.side===side).reduce((s,e)=>s+e.pts,0);
+const fmt2 = n => String(n).padStart(2,'0');
+
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
+function render(){
+  const rs = calcSide('red', STATE.round);
+  const bs = calcSide('blue', STATE.round);
+  const rt = calcTotal('red');
+  const bt = calcTotal('blue');
+
+  document.getElementById('red-score').textContent = rs;
+  document.getElementById('blue-score').textContent = bs;
+  document.getElementById('red-total').textContent = `Total match: ${rt} pts`;
+  document.getElementById('blue-total').textContent = `Total match: ${bt} pts`;
+  document.getElementById('red-name').textContent = STATE.redName.toUpperCase();
+  document.getElementById('blue-name').textContent = STATE.blueName.toUpperCase();
+  document.getElementById('round-pill').textContent = `ROUND ${STATE.round}`;
+  document.getElementById('div-round').textContent = `R${STATE.round}`;
+  document.getElementById('judge-id').textContent = `JUGE #${STATE.judgeNum}`;
+
+  // Timer
+  const mins = Math.floor(STATE.timer/60);
+  const secs = fmt2(STATE.timer%60);
+  const td = document.getElementById('timer-disp');
+  td.textContent = `${mins}:${secs}`;
+  td.classList.toggle('danger', STATE.timer <= 30);
+
+  renderLog();
+}
+
+function renderActions(){
+  const buildBtns = (actions, side) => actions.map(a => `
+    <button class="act-btn ${a.cls}" onclick="recordEvent('${side}','${a.type}',${a.pts})">
+      <span class="btn-pts">+${a.pts}</span>
+      <span class="btn-icon">${a.icon}</span>
+      <span class="btn-text">${a.label}<span class="btn-sub">${a.sub}</span></span>
+    </button>`).join('');
+
+  document.getElementById('red-actions').innerHTML = buildBtns(RED_ACTIONS, 'red');
+  document.getElementById('blue-actions').innerHTML = buildBtns(BLUE_ACTIONS, 'blue');
+}
+
+function renderLog(){
+  const entries = [...STATE.events].reverse().slice(0,30);
+  document.getElementById('log-body').innerHTML = entries.length === 0
+    ? '<div style="color:var(--muted);font-size:11px;padding:8px 0">Aucun événement</div>'
+    : entries.map(e=>`
+      <div class="log-entry">
+        <span class="log-side ${e.side}">${e.side==='red'?'ROUGE':'BLEU'}</span>
+        <span class="log-type">${e.type.replace(/_/g,' ')}</span>
+        <span class="log-pts">+${e.pts}</span>
+        <span class="log-round">R${e.round}</span>
+        <button class="log-undo" onclick="undoEvent('${e.id}')">↩</button>
+      </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════════════
+function recordEvent(side, type, pts){
+  const e = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
+    side, type, pts, round: STATE.round, time: STATE.timer
+  };
+  STATE.events.push(e);
+
+  // Flash effect
+  const col = document.getElementById(`col-${side}`);
+  col.classList.remove(`flash-${side}`);
+  void col.offsetWidth; // reflow
+  col.classList.add(`flash-${side}`);
+  setTimeout(()=>col.classList.remove(`flash-${side}`),350);
+
+  // Haptic feedback
+  if(navigator.vibrate) navigator.vibrate(pts===2?[50,20,50]:40);
+
+  render();
+}
+
+function undoEvent(id){
+  STATE.events = STATE.events.filter(e=>e.id!==id);
+  render();
+}
+
+function setVerdict(v){
+  STATE.verdict = v;
+  STATE.submitted = false;
+  ['red','draw','blue'].forEach(x=>{
+    document.getElementById(`v-${x}`).classList.toggle('selected', x===v);
+  });
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function submitVerdict(){
+  if(!STATE.verdict) return;
+  const rs = calcSide('red', STATE.round);
+  const bs = calcSide('blue', STATE.round);
+
+  // Validate: verdict should match score unless tie-breaking
+  let autoVerdict = rs>bs?'red':bs>rs?'blue':'draw';
+  if(STATE.verdict !== autoVerdict){
+    if(!confirm(`Score: Rouge ${rs} — Bleu ${bs}. Vous souhaitez valider "${STATE.verdict==='red'?'ROUGE':STATE.verdict==='blue'?'BLEU':'ÉGALITÉ'}" malgré les points. Confirmer ?`)) return;
+  }
+
+  STATE.history.push({round:STATE.round, verdict:STATE.verdict, red:rs, blue:bs, judgeNum:STATE.judgeNum});
+  STATE.submitted = true;
+
+  // Visual feedback
+  const sa = document.getElementById('submit-area');
+  sa.innerHTML = `<div class="submitted-banner">
+    ✓ Verdict soumis — Round ${STATE.round} — 
+    <b>${STATE.verdict==='red'?'ROUGE':STATE.verdict==='blue'?'BLEU':'ÉGALITÉ'}</b>
+  </div>`;
+  document.getElementById('btn-submit').disabled = true;
+
+  // Store for head judge retrieval
+  storeVerdict();
+
+  // Auto advance after 3s
+  if(STATE.round < 3){
+    setTimeout(()=>{
+      STATE.round++;
+      STATE.verdict=null;
+      STATE.submitted=false;
+      resetSubmitArea();
+      ['red','draw','blue'].forEach(x=>document.getElementById(`v-${x}`).classList.remove('selected'));
+      render();
+    }, 3000);
+  }
+}
+
+function resetSubmitArea(){
+  document.getElementById('submit-area').innerHTML = `
+    <button class="submit-btn" id="btn-submit" disabled onclick="submitVerdict()">SOUMETTRE ↑</button>`;
+}
+
+function storeVerdict(){
+  try{
+    const key = `sanda_j${STATE.judgeNum}_r${STATE.round}`;
+    SP.bc.publish(key, {
+
+      judgeNum:STATE.judgeNum,
+      round:STATE.round,
+      verdict:STATE.verdict,
+      red:calcSide('red',STATE.round),
+      blue:calcSide('blue',STATE.round),
+      timestamp:Date.now()
+    
+});
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════════════
+function openSetup(){
+  document.getElementById('cfg-judge').value = STATE.judgeNum;
+  document.getElementById('cfg-red').value = STATE.redName;
+  document.getElementById('cfg-blue').value = STATE.blueName;
+  document.getElementById('cfg-round').value = STATE.round;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+function closeSetup(){document.getElementById('modal-overlay').style.display='none';}
+function saveSetup(){
+  STATE.judgeNum = parseInt(document.getElementById('cfg-judge').value);
+  STATE.redName = document.getElementById('cfg-red').value || 'Compétiteur Rouge';
+  STATE.blueName = document.getElementById('cfg-blue').value || 'Compétiteur Bleu';
+  STATE.round = parseInt(document.getElementById('cfg-round').value);
+  closeSetup();
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// LOG / TIMER
+// ══════════════════════════════════════════════════════
+let logOpen = false;
+function toggleLog(){
+  logOpen = !logOpen;
+  document.getElementById('log-panel').classList.toggle('open', logOpen);
+}
+
+// Listen for timer + match broadcast from head judge
+SP.onSync((key, value) => {
+  if(key==='sanda_timer'||key==='sanda_match'||key==='sanda_stop'){
+    const e={key,newValue:JSON.stringify(value)};window.dispatchEvent(Object.assign(new StorageEvent('storage'),{key:e.key,newValue:e.newValue}));
+  }
+});
+window.addEventListener('storage', e=>{
+  if(e.key==='sanda_timer'){
+    try{
+      const d=JSON.parse(e.newValue);
+      // Detect round change → reset scores for new round
+      if(d.round && d.round !== STATE.round){
+        const prevRound = STATE.round;
+        STATE.round = d.round;
+        STATE.verdict = null;
+        STATE.submitted = false;
+        resetSubmitArea();
+        ['red','draw','blue'].forEach(x=>{
+          const el=document.getElementById(`v-${x}`);
+          if(el) el.classList.remove('selected');
+        });
+        // Show round change notification
+        const banner = document.createElement('div');
+        banner.style.cssText=`position:fixed;top:60px;left:50%;transform:translateX(-50%);
+          background:rgba(201,241,53,.95);color:#000;padding:8px 20px;border-radius:8px;
+          font-family:var(--disp);font-size:18px;letter-spacing:2px;z-index:300`;
+        banner.textContent = `ROUND ${d.round} — NOUVEAU ROUND`;
+        document.body.appendChild(banner);
+        setTimeout(()=>banner.remove(), 2500);
+      }
+      STATE.timer = d.timer;
+      STATE.round = d.round || STATE.round;
+      const td=document.getElementById('timer-disp');
+      const mins=Math.floor(d.timer/60);
+      const secs=fmt2(d.timer%60);
+      td.textContent=`${mins}:${secs}`;
+      td.classList.toggle('danger', d.timer<=30);
+      document.getElementById('round-pill').textContent=`ROUND ${STATE.round}`;
+      document.getElementById('div-round').textContent=`R${STATE.round}`;
+    }catch(err){}
+  }
+
+  if(e.key==='sanda_match'){
+    try{
+      const m=JSON.parse(e.newValue);
+      if(!m) return;
+      // Auto-fill competitor names if not manually set
+      if(STATE.redName==='Compétiteur Rouge' && m.redName)
+        STATE.redName = m.redName;
+      if(STATE.blueName==='Compétiteur Bleu' && m.blueName)
+        STATE.blueName = m.blueName;
+      document.getElementById('red-name').textContent = STATE.redName.toUpperCase();
+      document.getElementById('blue-name').textContent = STATE.blueName.toUpperCase();
+    }catch(err){}
+  }
+
+  // Medical emergency from arbitre/medecin
+  if(e.key==='sanda_stop'){
+    try{
+      const d=JSON.parse(e.newValue);
+      if(d&&(d.type==='emergency'||d.type==='injury'||d.type==='injury_stop')){
+        const banner=document.createElement('div');
+        banner.style.cssText=`position:fixed;inset:0;background:rgba(255,45,85,.15);
+          border:3px solid var(--red);z-index:200;pointer-events:none;
+          display:flex;align-items:center;justify-content:center;
+          font-family:var(--disp);font-size:32px;letter-spacing:4px;color:var(--red)`;
+        banner.textContent='⏸ MATCH SUSPENDU';
+        document.body.appendChild(banner);
+        setTimeout(()=>banner.remove(),4000);
+      }
+    }catch(err){}
+  }
+});
+
+// Polling fallback for same-tab use
+setInterval(()=>{
+  try{
+    const t=SP.store.get('sanda_timer');
+    if(t){
+      const td=document.getElementById('timer-disp');
+      if(td){
+        td.textContent=`${Math.floor(t.timer/60)}:${fmt2(t.timer%60)}`;
+        td.classList.toggle('danger',t.timer<=30);
+      }
+    }
+    const m=SP.store.get('sanda_match');
+    if(m){
+      if(STATE.redName==='Compétiteur Rouge'&&m.redName) STATE.redName=m.redName;
+      if(STATE.blueName==='Compétiteur Bleu'&&m.blueName) STATE.blueName=m.blueName;
+    }
+  }catch(e){}
+}, 2000);
+
+document.getElementById('btn-log').addEventListener('click', toggleLog);
+document.getElementById('btn-setup').addEventListener('click', openSetup);
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+// Try to load match data on startup
+try{
+  const m=SP.store.get('sanda_match');
+  if(m){
+    if(m.redName) STATE.redName=m.redName;
+    if(m.blueName) STATE.blueName=m.blueName;
+  }
+  const t=SP.store.get('sanda_timer');
+  if(t){
+    STATE.round=t.round||1;
+    STATE.timer=t.timer||120;
+  }
+}catch(e){}
+
+// ── READ URL PARAMS — auto-configure judge number ──
+(function initFromURL(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const j = parseInt(params.get('j'));
+    if(j && j>=1 && j<=5){
+      STATE.judgeNum = j;
+      // If URL param set, skip the setup modal — judge goes straight to scoring
+      renderActions();
+      render();
+      // Small welcome banner instead of modal
+      const banner = document.createElement('div');
+      banner.style.cssText=`position:fixed;top:0;left:0;right:0;
+        background:var(--acc);color:#000;padding:10px;text-align:center;
+        font-family:var(--disp);font-size:18px;letter-spacing:3px;z-index:300;
+        animation:slideDown .4s`;
+      const styleEl = document.createElement('style');
+      styleEl.textContent='@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}';
+      document.head.appendChild(styleEl);
+      banner.textContent = `⚖ JUGE #${j} — PRÊT`;
+      document.body.appendChild(banner);
+      setTimeout(()=>{banner.style.transition='opacity .4s';banner.style.opacity='0';
+        setTimeout(()=>banner.remove(),400);}, 2500);
+      return;
+    }
+  }catch(e){}
+  // No URL param — show setup modal for manual configuration
+  renderActions();
+  render();
+  openSetup();
+})();
+</script>
+</body>
+</html>

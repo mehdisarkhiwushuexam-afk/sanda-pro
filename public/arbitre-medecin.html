@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ARBITRE / MÉDECIN — Wushu Sanda IWUF 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060810;--s1:#0b0f1a;--s2:#111828;--s3:#192033;
+  --b1:#1d2840;--red:#ff2d55;--blue:#0af;--acc:#c9f135;
+  --warn:#ff9500;--green:#35f5a0;
+  --txt:#f0f4ff;--muted:#4a5880;--muted2:#7a8aaa;
+  --disp:'Bebas Neue',sans-serif;--font:'IBM Plex Mono',monospace;
+}
+html,body{height:100%;overflow:hidden;touch-action:manipulation}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;
+  background-image:radial-gradient(ellipse at 50% 0%,rgba(255,45,85,.04) 0%,transparent 50%)}
+#app{display:flex;flex-direction:column;height:100vh}
+
+header{background:var(--s1);border-bottom:1px solid var(--b1);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.h-brand{display:flex;align-items:center;gap:10px}
+.h-badge{background:var(--red);color:#fff;font-family:var(--disp);font-size:11px;
+  padding:3px 10px;border-radius:4px;letter-spacing:2px}
+.h-title{font-family:var(--disp);font-size:16px;letter-spacing:3px}
+.h-right{display:flex;gap:12px;align-items:center}
+.role-select{background:var(--s2);border:1px solid var(--b1);border-radius:8px;
+  color:var(--txt);font-family:var(--font);font-size:12px;padding:6px 12px;outline:none;cursor:pointer}
+
+#content{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+
+/* Match status card */
+.status-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.sc-left{display:flex;flex-direction:column;gap:4px}
+.sc-match{font-family:var(--disp);font-size:18px;letter-spacing:2px;color:var(--muted2)}
+.sc-scores{display:flex;align-items:center;gap:12px}
+.sc-score-r{font-family:var(--disp);font-size:40px;color:var(--red);letter-spacing:-1px}
+.sc-score-b{font-family:var(--disp);font-size:40px;color:var(--blue);letter-spacing:-1px}
+.sc-sep{font-family:var(--disp);font-size:24px;color:var(--muted)}
+.sc-center{text-align:center}
+.sc-timer{font-family:var(--disp);font-size:52px;letter-spacing:-2px;color:var(--txt)}
+.sc-timer.danger{color:var(--red);animation:tdanger .6s infinite}
+@keyframes tdanger{0%,100%{opacity:1}50%{opacity:.4}}
+.sc-round{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;text-align:center}
+.sc-status{font-family:var(--disp);font-size:14px;letter-spacing:2px;padding:4px 14px;
+  border-radius:20px;margin-top:4px}
+.sc-status.active{background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+.sc-status.paused{background:rgba(255,149,0,.1);color:var(--warn);border:1px solid rgba(255,149,0,.3)}
+.sc-status.ready{background:rgba(201,241,53,.1);color:var(--acc);border:1px solid rgba(201,241,53,.3)}
+
+/* Section title */
+.section-title{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+  padding:4px 0 8px;border-bottom:1px solid var(--b1);margin-bottom:10px}
+
+/* STOP BUTTONS - big and unmissable */
+.stop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stop-btn{border:none;border-radius:14px;padding:20px 16px;font-family:var(--disp);
+  font-size:18px;letter-spacing:2px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:6px;transition:all .12s;-webkit-user-select:none;user-select:none;
+  position:relative;overflow:hidden}
+.stop-btn:active{transform:scale(.96)}
+.stop-icon{font-size:32px}
+.stop-sub{font-size:10px;font-family:var(--font);letter-spacing:.5px;opacity:.7;font-weight:400}
+
+.btn-emergency{background:rgba(255,45,85,.15);border:2px solid rgba(255,45,85,.5);color:var(--red)}
+.btn-emergency:active{background:rgba(255,45,85,.3)}
+.btn-injury{background:rgba(255,149,0,.12);border:2px solid rgba(255,149,0,.4);color:var(--warn)}
+.btn-injury:active{background:rgba(255,149,0,.25)}
+.btn-timeout{background:rgba(201,241,53,.1);border:2px solid rgba(201,241,53,.3);color:var(--acc)}
+.btn-timeout:active{background:rgba(201,241,53,.2)}
+.btn-resume{background:rgba(53,245,160,.1);border:2px solid rgba(53,245,160,.3);color:var(--green)}
+.btn-resume:active{background:rgba(53,245,160,.2)}
+
+/* Injury evaluation */
+.injury-form{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:16px}
+.inj-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.inj-side-btn{border:none;border-radius:10px;padding:12px;font-family:var(--disp);
+  font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .12s;text-align:center}
+.inj-side-btn:active{transform:scale(.97)}
+.inj-red{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.25);color:var(--red)}
+.inj-red.sel{background:rgba(255,45,85,.3);border-color:var(--red)}
+.inj-blue{background:rgba(0,170,255,.1);border:1px solid rgba(0,170,255,.25);color:var(--blue)}
+.inj-blue.sel{background:rgba(0,170,255,.25);border-color:var(--blue)}
+
+.inj-type-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.inj-type{border:none;border-radius:8px;padding:8px 6px;font-family:var(--font);font-size:10px;
+  font-weight:600;background:var(--s3);border:1px solid var(--b1);color:var(--muted2);cursor:pointer;
+  text-align:center;transition:all .12s;letter-spacing:.3px}
+.inj-type:active{transform:scale(.97)}
+.inj-type.sel{background:rgba(255,149,0,.15);border-color:rgba(255,149,0,.4);color:var(--warn)}
+
+.inj-notes{width:100%;background:var(--s3);border:1px solid var(--b1);border-radius:8px;
+  padding:8px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none;
+  resize:none;margin-bottom:8px}
+.inj-notes:focus{border-color:var(--warn)}
+
+.verdict-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.verdict-btn{border:none;border-radius:10px;padding:12px;font-family:var(--disp);
+  font-size:15px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-align:center}
+.verdict-btn:active{transform:scale(.97)}
+.v-continue{background:rgba(53,245,160,.1);border:1px solid rgba(53,245,160,.3);color:var(--green)}
+.v-stop{background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.3);color:var(--red)}
+
+/* Doping check */
+.doping-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:16px}
+.doping-row{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--b1)}
+.doping-row:last-child{border-bottom:none}
+.doping-name{font-size:12px;font-weight:600}
+.doping-sub{font-size:10px;color:var(--muted)}
+.check-btn{border:none;border-radius:8px;padding:6px 14px;font-family:var(--disp);
+  font-size:14px;letter-spacing:1px;cursor:pointer;transition:all .12s}
+.check-clean{background:rgba(53,245,160,.1);border:1px solid rgba(53,245,160,.2);color:var(--green)}
+.check-flag{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.2);color:var(--red)}
+.check-status{font-size:11px;font-weight:700;letter-spacing:.5px}
+.check-ok{color:var(--green)}
+.check-ng{color:var(--red)}
+.check-pending{color:var(--muted)}
+
+/* Log */
+.log-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden}
+.log-head{padding:10px 14px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center}
+.log-body{padding:8px 14px;max-height:180px;overflow-y:auto}
+.log-entry{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.log-time{color:var(--muted);min-width:50px}
+.log-msg{flex:1;color:var(--muted2)}
+.log-type{min-width:60px;font-weight:700}
+.log-type.emergency{color:var(--red)}
+.log-type.injury{color:var(--warn)}
+.log-type.info{color:var(--acc)}
+.log-type.medical{color:var(--green)}
+
+/* Flash overlay */
+#flash-overlay{position:fixed;inset:0;pointer-events:none;z-index:200;
+  display:none;align-items:center;justify-content:center;font-family:var(--disp);
+  font-size:80px;letter-spacing:6px}
+.flash-text{padding:20px 40px;border-radius:20px;animation:flashIn .4s}
+@keyframes flashIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="h-brand">
+      <div class="h-badge">MÉDICAL</div>
+      <div class="h-title">ARBITRE / MÉDECIN</div>
+    </div>
+    <div class="h-right">
+      <select class="role-select" id="role-sel" onchange="setRole(this.value)">
+        <option value="medecin">Médecin supervisant</option>
+        <option value="arbitre">Arbitre principal</option>
+        <option value="assistant">Assistant médical</option>
+      </select>
+    </div>
+  </header>
+
+  <div id="content">
+    <!-- STATUS CARD -->
+    <div class="status-card">
+      <div class="sc-left">
+        <div class="sc-match" id="sc-match">MATCH EN COURS</div>
+        <div class="sc-scores">
+          <div class="sc-score-r" id="sc-red">0</div>
+          <div class="sc-sep">—</div>
+          <div class="sc-score-b" id="sc-blue">0</div>
+        </div>
+      </div>
+      <div class="sc-center">
+        <div class="sc-timer" id="sc-timer">2:00</div>
+        <div class="sc-round" id="sc-round">ROUND 1 / 3</div>
+        <div class="sc-status ready" id="sc-status">PRÊT</div>
+      </div>
+    </div>
+
+    <!-- STOP ACTIONS -->
+    <div>
+      <div class="section-title">ACTIONS D'URGENCE</div>
+      <div class="stop-grid">
+        <button class="stop-btn btn-emergency" onclick="sendStop('emergency')">
+          <span class="stop-icon">🚨</span>
+          <span>URGENCE MÉDICALE</span>
+          <span class="stop-sub">Arrêt immédiat — Art. 23.3</span>
+        </button>
+        <button class="stop-btn btn-injury" onclick="sendStop('injury')">
+          <span class="stop-icon">🏥</span>
+          <span>BLESSURE</span>
+          <span class="stop-sub">Évaluation requise — Art. 23.3</span>
+        </button>
+        <button class="stop-btn btn-timeout" onclick="sendStop('timeout')">
+          <span class="stop-icon">⏸</span>
+          <span>TEMPS MORT</span>
+          <span class="stop-sub">Pause technique — Art. 23.9</span>
+        </button>
+        <button class="stop-btn btn-resume" onclick="sendResume()">
+          <span class="stop-icon">▶</span>
+          <span>REPRENDRE</span>
+          <span class="stop-sub">Match peut continuer</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- INJURY EVALUATION -->
+    <div class="injury-form" id="injury-form">
+      <div class="section-title">ÉVALUATION DE BLESSURE — IWUF Art. 24.3.2</div>
+      <div class="inj-row">
+        <button class="inj-side-btn inj-red" id="inj-red" onclick="selSide('red')">
+          ■ ROUGE
+        </button>
+        <button class="inj-side-btn inj-blue" id="inj-blue" onclick="selSide('blue')">
+          ■ BLEU
+        </button>
+      </div>
+      <div class="section-title" style="font-size:9px">TYPE DE BLESSURE</div>
+      <div class="inj-type-grid">
+        <button class="inj-type" onclick="selType(this,'Coupure')">Coupure</button>
+        <button class="inj-type" onclick="selType(this,'Contusion')">Contusion</button>
+        <button class="inj-type" onclick="selType(this,'Commot.')">Commot.</button>
+        <button class="inj-type" onclick="selType(this,'Articulaire')">Articulaire</button>
+        <button class="inj-type" onclick="selType(this,'Musculaire')">Musculaire</button>
+        <button class="inj-type" onclick="selType(this,'KO')">KO / TKO</button>
+      </div>
+      <textarea class="inj-notes" id="inj-notes" rows="2" placeholder="Notes médicales..."></textarea>
+      <div class="verdict-row">
+        <button class="verdict-btn v-continue" onclick="injuryVerdict('continue')">
+          ✓ PEUT CONTINUER
+        </button>
+        <button class="verdict-btn v-stop" onclick="injuryVerdict('stop')">
+          ✕ ARRÊT DU MATCH
+        </button>
+      </div>
+    </div>
+
+    <!-- DOPING / OXYGEN CHECK -->
+    <div class="doping-card">
+      <div class="section-title">CONTRÔLE RÉGLEMENTAIRE — Art. 10.5</div>
+      <div id="doping-list">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="log-card">
+      <div class="log-head">
+        <span class="section-title" style="margin:0;padding:0;border:none">JOURNAL MÉDICAL</span>
+        <button onclick="clearLog()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--font)">Effacer</button>
+      </div>
+      <div class="log-body" id="log-body">
+        <div style="color:var(--muted);font-size:11px;padding:8px 0">Aucune intervention</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="flash-overlay"></div>
+
+<script src="shared.js"></script>
+<script>
+const fmt2 = n => String(n).padStart(2,'0');
+const now = ()=>`${fmt2(new Date().getHours())}:${fmt2(new Date().getMinutes())}:${fmt2(new Date().getSeconds())}`;
+
+let selectedSide = null;
+let selectedType = null;
+let role = 'medecin';
+let logEntries = [];
+
+function setRole(v){ role=v; }
+
+// ── UPDATE FROM SHARED STATE ──
+function update(){
+  const t = SP.store.get('sanda_timer');
+  const m = SP.store.get('sanda_match');
+  if(t){
+    const mins=Math.floor(t.timer/60), secs=fmt2(t.timer%60);
+    const te=document.getElementById('sc-timer');
+    te.textContent=`${mins}:${secs}`;
+    te.classList.toggle('danger',t.timer<=30);
+    document.getElementById('sc-round').textContent=`ROUND ${t.round||1} / 3`;
+    const st=document.getElementById('sc-status');
+    const sm={active:{c:'active',l:'EN COURS'},paused:{c:'paused',l:'PAUSE'},ready:{c:'ready',l:'PRÊT'},finished:{c:'ready',l:'TERMINÉ'}};
+    const sv=sm[t.status]||sm.ready;
+    st.className=`sc-status ${sv.c}`;st.textContent=sv.l;
+  }
+  if(m){
+    const ri=(t?.round||1)-1;
+    document.getElementById('sc-red').textContent=m.redScores?.[ri]||0;
+    document.getElementById('sc-blue').textContent=m.blueScores?.[ri]||0;
+    document.getElementById('sc-match').textContent=
+      `${(m.redName||'ROUGE').toUpperCase()} VS ${(m.blueName||'BLEU').toUpperCase()}`;
+    renderDopingList(m);
+  }
+}
+
+function SP.store.get(key){
+  try{return JSON.parse(localStorage.getItem(key)||'null');}catch(e){return null;}
+}
+
+// ── STOP SIGNALS ──
+function sendStop(type){
+  const labels={emergency:'URGENCE MÉDICALE',injury:'BLESSURE',timeout:'TEMPS MORT'};
+  const colors={emergency:'rgba(255,45,85,.9)',injury:'rgba(255,149,0,.9)',timeout:'rgba(201,241,53,.9)'};
+  const textColor={emergency:'#fff',injury:'#000',timeout:'#000'};
+
+  SP.bc.publish('sanda_stop', {type, time:Date.now(), role});
+
+  // Flash
+  const fo=document.getElementById('flash-overlay');
+  fo.style.display='flex';
+  fo.style.background=colors[type];
+  fo.innerHTML=`<div class="flash-text" style="color:${textColor[type]};background:${colors[type]}">${labels[type]}</div>`;
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+  setTimeout(()=>{fo.style.display='none';fo.innerHTML='';},2000);
+
+  addLog(type, labels[type]);
+}
+
+function sendResume(){
+  SP.bc.publish('sanda_stop', {type:'resume',time:Date.now(),role});
+  addLog('info','Match repris');
+  if(navigator.vibrate) navigator.vibrate(80);
+}
+
+// ── INJURY FORM ──
+function selSide(side){
+  selectedSide=side;
+  document.getElementById('inj-red').classList.toggle('sel',side==='red');
+  document.getElementById('inj-blue').classList.toggle('sel',side==='blue');
+}
+
+function selType(btn,type){
+  selectedType=type;
+  document.querySelectorAll('.inj-type').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function injuryVerdict(verdict){
+  if(!selectedSide){alert('Sélectionnez d\'abord le côté blessé');return;}
+  const notes=document.getElementById('inj-notes').value;
+  const data={side:selectedSide,type:selectedType||'Non spécifié',notes,verdict,time:Date.now(),role};
+  SP.bc.publish('sanda_injury', data);
+
+  const msg=verdict==='continue'
+    ? `${selectedSide.toUpperCase()} — Peut continuer (${selectedType||'blessure'})`
+    : `${selectedSide.toUpperCase()} — ARRÊT DU MATCH (${selectedType||'blessure'})`;
+  addLog(verdict==='continue'?'medical':'emergency', msg);
+
+  if(verdict==='stop'){
+    SP.bc.publish('sanda_stop', {type:'injury_stop',side:selectedSide,time:Date.now()});
+  }
+
+  // Reset form
+  selectedSide=null; selectedType=null;
+  document.getElementById('inj-red').classList.remove('sel');
+  document.getElementById('inj-blue').classList.remove('sel');
+  document.querySelectorAll('.inj-type').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('inj-notes').value='';
+  if(navigator.vibrate) navigator.vibrate(60);
+}
+
+// ── DOPING / OXYGEN ──
+function renderDopingList(m){
+  const competitors=[
+    {id:'red',name:m.redName||'Rouge',team:m.redTeam||''},
+    {id:'blue',name:m.blueName||'Bleu',team:m.blueTeam||''}
+  ];
+  const dl=document.getElementById('doping-list');
+  dl.innerHTML=competitors.map(c=>{
+    const key=`doping_${c.id}`;
+    const status=SP.store.get(key);
+    const statusEl=status
+      ?status.clean
+        ?`<span class="check-status check-ok">✓ CONFORME</span>`
+        :`<span class="check-status check-ng">✕ SIGNALÉ</span>`
+      :`<span class="check-status check-pending">—</span>`;
+    return`<div class="doping-row">
+      <div>
+        <div class="doping-name" style="color:${c.id==='red'?'var(--red)':'var(--blue)'}">${c.name.toUpperCase()}</div>
+        <div class="doping-sub">${c.team||'—'} • Aucun oxygène inter-rounds</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${statusEl}
+        <button class="check-btn check-clean" onclick="setDoping('${c.id}',true)">✓ OK</button>
+        <button class="check-btn check-flag" onclick="setDoping('${c.id}',false)">! FLAG</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setDoping(side,clean){
+  const m=SP.store.get('sanda_match');
+  const name=side==='red'?(m?.redName||'Rouge'):(m?.blueName||'Bleu');
+  SP.bc.publish(`doping_${side}`, {clean,time:Date.now()});
+  addLog(clean?'info':'emergency', `${name.toUpperCase()} — Contrôle antidopage: ${clean?'CONFORME':'SIGNALÉ'}`);
+  update();
+}
+
+// ── LOG ──
+function addLog(type, msg){
+  logEntries.unshift({type,msg,time:now()});
+  if(logEntries.length>50)logEntries=logEntries.slice(0,50);
+  renderLog();
+}
+
+function clearLog(){logEntries=[];renderLog();}
+
+function renderLog(){
+  const lb=document.getElementById('log-body');
+  if(!logEntries.length){
+    lb.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px 0">Aucune intervention</div>';
+    return;
+  }
+  lb.innerHTML=logEntries.map(e=>`
+    <div class="log-entry">
+      <span class="log-time">${e.time}</span>
+      <span class="log-type ${e.type}">${e.type.toUpperCase()}</span>
+      <span class="log-msg">${e.msg}</span>
+    </div>`).join('');
+}
+
+SP.onSync((key,value)=>{
+  if(['sanda_timer','sanda_match','sanda_stop'].includes(key)){
+    window.dispatchEvent(new StorageEvent('storage',{key,newValue:JSON.stringify(value)}));
+  }
+});
+// Listen for stop requests from chef de table
+window.addEventListener('storage',e=>{
+  if(e.key==='sanda_timer'||e.key==='sanda_match') update();
+  if(e.key==='sanda_stop'){
+    const d=SP.store.get('sanda_stop');
+    if(d&&d.role!==role) addLog('info',`Signal reçu: ${d.type} (par ${d.role})`);
+  }
+});
+
+setInterval(update,1000);
+update();
+</script>
+</body>
+</html>

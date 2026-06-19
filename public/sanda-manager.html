@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="stylesheet" href="shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANDA MANAGER — IWUF 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f12;
+  --surface: #141720;
+  --surface2: #1c2130;
+  --surface3: #242b3d;
+  --border: #2e3650;
+  --red: #e63946;
+  --blue: #1d7ed8;
+  --gold: #f4a61a;
+  --green: #2ec4b6;
+  --text: #e8eaf0;
+  --muted: #8892a4;
+  --red-dim: rgba(230,57,70,0.12);
+  --blue-dim: rgba(29,126,216,0.12);
+  --gold-dim: rgba(244,166,26,0.12);
+  --green-dim: rgba(46,196,182,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo h1 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--red);
+  line-height: 1;
+}
+
+.logo span {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+
+.nav-section {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 10px 8px 4px;
+  margin-top: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  transition: all 0.15s;
+  margin-bottom: 1px;
+}
+
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--red); color: #fff; font-weight: 600; }
+.nav-item .ni { font-size: 15px; width: 18px; text-align: center; }
+
+.sidebar-info {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.sidebar-info strong { color: var(--gold); display: block; margin-bottom: 2px; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.topbar h2 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: #c02d38; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #1566b5; }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-gold { background: var(--gold); color: #000; font-weight: 700; }
+.btn-sm { padding: 5px 11px; font-size: 11.5px; }
+.btn-green { background: var(--green); color: #000; font-weight: 700; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px;
+}
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── GRID ── */
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── STAT CARD ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+.stat-card:hover { border-color: var(--red); transform: translateY(-2px); }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.stat-value { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 600; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.v-red { color: var(--red); }
+.v-blue { color: var(--blue); }
+.v-gold { color: var(--gold); }
+.v-green { color: var(--green); }
+
+/* ── PANEL ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.panel-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-header h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.panel-body { padding: 16px 18px; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+thead th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  cursor: pointer;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 10px 12px; vertical-align: middle; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.b-red { background: var(--red-dim); color: var(--red); }
+.b-blue { background: var(--blue-dim); color: #5ba8f5; }
+.b-gold { background: var(--gold-dim); color: var(--gold); }
+.b-green { background: var(--green-dim); color: var(--green); }
+.b-muted { background: rgba(136,146,164,0.12); color: var(--muted); }
+
+/* ── FORM ── */
+.form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.form-group label { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+.form-group input, .form-group select, .form-group textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 11px;
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--red); }
+.form-group select option { background: #1c2130; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 500px;
+  max-height: 88vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s;
+}
+@keyframes slideUp { from { transform:translateY(20px);opacity:0; } to { transform:translateY(0);opacity:1; } }
+.modal-head {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-head h3 { font-family: 'Oswald', sans-serif; font-size: 16px; letter-spacing: 1px; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ── TABS ── */
+.tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.tab {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+/* ── BRACKET ── */
+.bracket-wrap { overflow-x: auto; padding: 10px 0; }
+.bracket { display: flex; gap: 0; align-items: flex-start; min-width: 700px; }
+.bracket-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 160px; padding: 0 8px; }
+.bracket-round-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: center;
+  padding: 6px 0 12px;
+}
+.bracket-match {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  margin: 6px 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.bracket-match:hover { border-color: var(--gold); }
+.bracket-match.current { border-color: var(--red); }
+.bracket-competitor {
+  padding: 7px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border);
+}
+.bracket-competitor:last-child { border-bottom: none; }
+.bracket-competitor.winner { background: rgba(244,166,26,0.08); color: var(--gold); font-weight: 600; }
+.bracket-competitor.loser { color: var(--muted); }
+.bracket-score {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ── SCORING ── */
+.scoring-arena {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.arena-header {
+  background: linear-gradient(135deg, #1a0f10, #101623);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.arena-fighter {
+  flex: 1;
+  text-align: center;
+}
+
+.arena-fighter.red-f .fighter-name { color: var(--red); }
+.arena-fighter.blue-f .fighter-name { color: #5ba8f5; }
+
+.fighter-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.fighter-country { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.arena-vs {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  color: var(--muted);
+  padding: 0 8px;
+}
+
+.arena-scores {
+  display: flex;
+  padding: 20px;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.score-panel {
+  flex: 1;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.score-panel.red-panel { background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.25); }
+.score-panel.blue-panel { background: rgba(29,126,216,0.08); border: 1px solid rgba(29,126,216,0.25); }
+
+.score-display {
+  font-family: 'Oswald', sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+}
+.score-panel.red-panel .score-display { color: var(--red); }
+.score-panel.blue-panel .score-display { color: #5ba8f5; }
+
+.score-actions { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+
+.action-btn {
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.12s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.action-btn .pts {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.2);
+}
+
+.btn-r1 { background: rgba(230,57,70,0.15); color: var(--red); border: 1px solid rgba(230,57,70,0.3); }
+.btn-r1:hover { background: rgba(230,57,70,0.3); }
+.btn-r2 { background: rgba(230,57,70,0.25); color: var(--red); border: 1px solid rgba(230,57,70,0.5); }
+.btn-r2:hover { background: rgba(230,57,70,0.4); }
+.btn-b1 { background: rgba(29,126,216,0.15); color: #5ba8f5; border: 1px solid rgba(29,126,216,0.3); }
+.btn-b1:hover { background: rgba(29,126,216,0.3); }
+.btn-b2 { background: rgba(29,126,216,0.25); color: #5ba8f5; border: 1px solid rgba(29,126,216,0.5); }
+.btn-b2:hover { background: rgba(29,126,216,0.4); }
+
+.arena-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.round-timer {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.round-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.timer-controls { display: flex; gap: 6px; }
+
+.penalty-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.pen-btn {
+  flex: 1;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s;
+}
+.pen-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.penalties-display {
+  width: 100%;
+  display: flex;
+  gap: 6px;
+}
+.pen-count {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
+}
+.pen-count span { display: block; font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--gold); }
+
+.arena-log {
+  border-top: 1px solid var(--border);
+  padding: 12px 18px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.log-title { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.log-item { font-size: 12px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; }
+.log-item span { font-size: 10px; color: var(--muted); }
+
+/* ── WEIGHT CATEGORIES ── */
+.weight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.weight-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s;
+  font-size: 12.5px;
+}
+.weight-chip:hover { border-color: var(--red); color: var(--red); }
+.weight-chip.selected { background: var(--red-dim); border-color: var(--red); color: var(--red); font-weight: 600; }
+.weight-chip .wc-kg { font-family: 'Oswald', sans-serif; font-size: 16px; display: block; }
+.weight-chip .wc-range { font-size: 10px; color: var(--muted); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── ALERT ── */
+.alert {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alert-red { background: var(--red-dim); border: 1px solid rgba(230,57,70,0.3); color: var(--red); }
+.alert-gold { background: var(--gold-dim); border: 1px solid rgba(244,166,26,0.3); color: var(--gold); }
+.alert-green { background: var(--green-dim); border: 1px solid rgba(46,196,182,0.3); color: var(--green); }
+
+/* ── STEPS ── */
+.step-list { counter-reset: step; display: flex; flex-direction: column; gap: 8px; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-radius: 7px;
+  font-size: 13px;
+}
+.step-num {
+  background: var(--red);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── PODIUM ── */
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; padding: 20px 0; }
+.podium-slot {
+  text-align: center;
+  min-width: 90px;
+}
+.podium-rank {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+.p1 .podium-rank { color: var(--gold); }
+.p2 .podium-rank { color: #b0b8c8; }
+.p3 .podium-rank { color: #cd7f32; }
+.podium-bar {
+  border-radius: 6px 6px 0 0;
+  margin: 6px auto;
+  width: 70px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.p1 .podium-bar { height: 80px; background: var(--gold-dim); border-color: var(--gold); }
+.p2 .podium-bar { height: 55px; }
+.p3 .podium-bar { height: 40px; }
+.podium-name { font-size: 12px; font-weight: 600; }
+.podium-country { font-size: 10px; color: var(--muted); }
+
+/* ── PROGRESS ── */
+.progress-wrap { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 4px; background: var(--red); transition: width 0.5s; }
+
+/* ── COMPETITOR AVATAR ── */
+.comp-cell { display: flex; align-items: center; gap: 9px; }
+.comp-av {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
+}
+.comp-name { font-weight: 500; font-size: 13px; }
+.comp-sub { font-size: 11px; color: var(--muted); }
+
+/* ── SEPARATOR ── */
+.sep { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+.text-muted { color: var(--muted); font-size: 12px; }
+.text-gold { color: var(--gold); }
+.text-red { color: var(--red); }
+.text-green { color: var(--green); }
+.fw600 { font-weight: 600; }
+.mb8 { margin-bottom: 8px; }
+.mb14 { margin-bottom: 14px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo">
+    <h1>SANDA MGR</h1>
+    <span>IWUF 2024 Compliant</span>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Compétition</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="ni">⚡</span> Tableau de bord</div>
+    <div class="nav-item" onclick="showPage('setup',this)"><span class="ni">⚙️</span> Configuration</div>
+
+    <div class="nav-section">Participants</div>
+    <div class="nav-item" onclick="showPage('registration',this)"><span class="ni">📝</span> Inscriptions</div>
+    <div class="nav-item" onclick="showPage('weighin',this)"><span class="ni">⚖️</span> Pesée</div>
+    <div class="nav-item" onclick="showPage('draw',this)"><span class="ni">🎲</span> Tirage au sort</div>
+
+    <div class="nav-section">Combats</div>
+    <div class="nav-item" onclick="showPage('brackets',this)"><span class="ni">🏆</span> Tableau / Brackets</div>
+    <div class="nav-item" onclick="showPage('scoring',this)"><span class="ni">🥊</span> Scoring Live</div>
+    <div class="nav-item" onclick="showPage('schedule',this)"><span class="ni">📅</span> Programme</div>
+
+    <div class="nav-section">Résultats</div>
+    <div class="nav-item" onclick="showPage('rankings',this)"><span class="ni">🥇</span> Classements</div>
+    <div class="nav-item" onclick="showPage('forms',this)"><span class="ni">📄</span> Formulaires</div>
+  </nav>
+  <div class="sidebar-info">
+    <strong>🏟️ DEMO — WC 2024</strong>
+    Catégories : 12 · Compétiteurs : 48 · Combats : 36
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+  <div class="topbar">
+    <h2 id="page-title">TABLEAU DE BORD</h2>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Export PDF — IWUF Forms')">📤 Export</button>
+      <button class="btn btn-red btn-sm" onclick="showPage('scoring', document.querySelector('.nav-item:nth-child(8)'))">🥊 Combat Live</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="grid-4">
+        <div class="stat-card"><div class="stat-label">Compétiteurs inscrits</div><div class="stat-value v-gold">48</div><div class="stat-sub">sur 64 attendus</div></div>
+        <div class="stat-card"><div class="stat-label">Catégories actives</div><div class="stat-value v-red">12</div><div class="stat-sub">Hommes & Femmes</div></div>
+        <div class="stat-card"><div class="stat-label">Combats programmés</div><div class="stat-value v-blue">36</div><div class="stat-sub">6 en cours</div></div>
+        <div class="stat-card"><div class="stat-label">Combats terminés</div><div class="stat-value v-green">22</div><div class="stat-sub">61% avancement</div></div>
+      </div>
+
+      <div class="alert alert-gold">⚠️ Pesée en cours — 3 compétiteurs hors catégorie détectés · Catégories : -60kg H, -52kg F</div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3>Combats du jour</h3><button class="btn btn-ghost btn-sm" onclick="showPage('schedule',document.querySelector('.nav-item:nth-child(9)'))">Voir tout</button></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Cat.</th><th>Rouge</th><th>Bleu</th><th>Heure</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr onclick="launchScoring('Li Wei','Chen Bo','-60kg H')"><td><span class="badge b-red">-60kg H</span></td><td>Li Wei</td><td>Chen Bo</td><td>10:00</td><td><span class="badge b-green">Live</span></td></tr>
+                <tr onclick="launchScoring('Park Ji','Kim Su','-70kg H')"><td><span class="badge b-red">-70kg H</span></td><td>Park Ji</td><td>Kim Su</td><td>10:20</td><td><span class="badge b-gold">Prochain</span></td></tr>
+                <tr><td><span class="badge b-blue">-52kg F</span></td><td>Ana Silva</td><td>Mia Chen</td><td>10:40</td><td><span class="badge b-muted">Att.</span></td></tr>
+                <tr><td><span class="badge b-red">-80kg H</span></td><td>Alex Petrov</td><td>John Smith</td><td>11:00</td><td><span class="badge b-muted">Att.</span></td></tr>
+                <tr><td><span class="badge b-blue">-60kg F</span></td><td>Sara Khan</td><td>Liu Fang</td><td>11:20</td><td><span class="badge b-muted">Att.</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h3>Progression par catégorie</h3></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-60kg Hommes</span><span class="text-muted">4/6 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:67%"></div></div></div>
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-70kg Hommes</span><span class="text-muted">2/6 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:33%;background:var(--blue)"></div></div></div>
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-52kg Femmes</span><span class="text-muted">5/6 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:83%;background:var(--green)"></div></div></div>
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-80kg Hommes</span><span class="text-muted">1/4 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:25%;background:var(--gold)"></div></div></div>
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-60kg Femmes</span><span class="text-muted">3/6 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:50%"></div></div></div>
+              <div><div class="flex-between mb8"><span style="font-size:12.5px">-90kg Hommes</span><span class="text-muted">0/4 combats</span></div><div class="progress-wrap"><div class="progress-bar" style="width:0%"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Derniers résultats</h3></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Catégorie</th><th>Vainqueur</th><th>Perdant</th><th>Score</th><th>Type victoire</th><th>Durée</th></tr></thead>
+            <tbody>
+              <tr><td class="text-muted">036</td><td><span class="badge b-red">-60kg H</span></td><td><b class="text-gold">Wang Lei</b></td><td>Kim Jun</td><td>2–1 R</td><td><span class="badge b-green">Points</span></td><td>3×2min</td></tr>
+              <tr><td class="text-muted">035</td><td><span class="badge b-blue">-52kg F</span></td><td><b class="text-gold">Ana Silva</b></td><td>Lee Na</td><td>KO R2</td><td><span class="badge b-red">KO</span></td><td>1:34</td></tr>
+              <tr><td class="text-muted">034</td><td><span class="badge b-red">-75kg H</span></td><td><b class="text-gold">Petrov A.</b></td><td>Hassan M.</td><td>3–0 R</td><td><span class="badge b-gold">Supériorité</span></td><td>2×2min</td></tr>
+              <tr><td class="text-muted">033</td><td><span class="badge b-blue">-48kg F</span></td><td><b class="text-gold">Liu Xia</b></td><td>Park Min</td><td>2–1 B</td><td><span class="badge b-green">Points</span></td><td>3×2min</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SETUP ══ -->
+    <div class="page" id="page-setup">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3>Informations de la compétition</h3></div>
+          <div class="panel-body">
+            <div class="form-group"><label>Nom de la compétition</label><input type="text" value="World Sanda Championship 2024" id="comp-name"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Lieu</label><input type="text" value="Beijing, China" id="comp-venue"></div>
+              <div class="form-group"><label>Date de début</label><input type="date" value="2024-11-15" id="comp-date"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Organisateur</label><input type="text" value="IWUF" id="comp-org"></div>
+              <div class="form-group"><label>Type</label>
+                <select id="comp-type">
+                  <option>Élimination directe</option>
+                  <option>Repêchage (16 pers.)</option>
+                  <option>Double élimination (16 pers.)</option>
+                  <option>Round Robin</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Durée round (adulte)</label>
+                <select><option>2 minutes</option><option>1 min 30 sec</option></select>
+              </div>
+              <div class="form-group"><label>Système</label>
+                <select><option>Électronique</option><option>Manuel</option></select>
+              </div>
+            </div>
+            <button class="btn btn-red" onclick="alert('Configuration sauvegardée ✓')">💾 Sauvegarder</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h3>Catégories actives — Adultes (IWUF 2024)</h3></div>
+          <div class="panel-body">
+            <div class="tabs">
+              <div class="tab active" onclick="switchCatTab(this,'cat-men')">Hommes</div>
+              <div class="tab" onclick="switchCatTab(this,'cat-women')">Femmes</div>
+            </div>
+            <div id="cat-men">
+              <div class="weight-grid" id="men-weights"></div>
+            </div>
+            <div id="cat-women" style="display:none">
+              <div class="weight-grid" id="women-weights"></div>
+            </div>
+            <button class="btn btn-ghost btn-sm mt8" onclick="alert('Catégories confirmées ✓')">✓ Confirmer la sélection</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Corps arbitral</h3><button class="btn btn-red btn-sm" onclick="openModal('modal-referee')">+ Ajouter</button></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Nom</th><th>Rôle</th><th>Nationalité</th><th>Niveau</th><th>Statut</th></tr></thead>
+            <tbody>
+              <tr><td><b>Zhang Wei</b></td><td>Arbitre Principal (台上)</td><td>CHN</td><td>International A</td><td><span class="badge b-green">Actif</span></td></tr>
+              <tr><td><b>Ahmed Hassan</b></td><td>Juge de ligne #1</td><td>EGY</td><td>International B</td><td><span class="badge b-green">Actif</span></td></tr>
+              <tr><td><b>Maria Santos</b></td><td>Juge de ligne #2</td><td>BRA</td><td>International A</td><td><span class="badge b-green">Actif</span></td></tr>
+              <tr><td><b>Dmitri Volkov</b></td><td>Juge de ligne #3</td><td>RUS</td><td>International B</td><td><span class="badge b-green">Actif</span></td></tr>
+              <tr><td><b>Park Sung</b></td><td>Chrono / Enregistrement</td><td>KOR</td><td>National A</td><td><span class="badge b-gold">Stand-by</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REGISTRATION ══ -->
+    <div class="page" id="page-registration">
+      <div class="flex-between mb14">
+        <div style="display:flex;gap:8px">
+          <input type="text" placeholder="Rechercher compétiteur..." style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;width:220px" oninput="filterCompetitors(this.value)">
+          <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:13px;outline:none" onchange="filterByWeight(this.value)">
+            <option value="">Toutes catégories</option>
+            <option>-52kg F</option><option>-60kg H</option><option>-65kg H</option><option>-70kg H</option><option>-75kg H</option><option>-80kg H</option>
+          </select>
+        </div>
+        <button class="btn btn-red" onclick="openModal('modal-add-competitor')">+ Inscrire compétiteur</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Liste des compétiteurs <span class="text-muted">(48 inscrits)</span></h3></div>
+        <div class="tbl-wrap">
+          <table id="competitors-table">
+            <thead><tr><th>#</th><th>Compétiteur</th><th>Pays</th><th>Catégorie</th><th>Genre</th><th>Date naissance</th><th>Poids annoncé</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="competitors-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WEIGH-IN ══ -->
+    <div class="page" id="page-weighin">
+      <div class="alert alert-gold">⚖️ La pesée doit débuter par la catégorie la plus légère · 1 heure par catégorie (règle IWUF Art.5.4) · Compétiteurs en tenue légère uniquement</div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3>Pesée en cours — -60kg Hommes</h3></div>
+          <div class="panel-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Compétiteur</th><th>Pays</th><th>Poids déclaré</th><th>Poids mesuré</th><th>Écart</th><th>Statut</th></tr></thead>
+                <tbody>
+                  <tr><td><b>Li Wei</b></td><td>CHN</td><td>59.8kg</td><td><input type="number" step="0.01" value="59.82" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px"></td><td class="text-green">+0.02</td><td><span class="badge b-green">✓ Qualifié</span></td></tr>
+                  <tr><td><b>Chen Bo</b></td><td>CHN</td><td>60.0kg</td><td><input type="number" step="0.01" value="60.00" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px"></td><td class="text-green">0.00</td><td><span class="badge b-green">✓ Qualifié</span></td></tr>
+                  <tr><td><b>Kim Jun</b></td><td>KOR</td><td>59.5kg</td><td><input type="number" step="0.01" value="61.20" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px"></td><td class="text-red">+1.20</td><td><span class="badge b-red">✗ Hors cat.</span></td></tr>
+                  <tr><td><b>Park Ji</b></td><td>KOR</td><td>58.8kg</td><td><input type="number" step="0.01" value="58.95" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px"></td><td class="text-green">+0.15</td><td><span class="badge b-green">✓ Qualifié</span></td></tr>
+                  <tr><td><b>Wang Lei</b></td><td>CHN</td><td>60.0kg</td><td><input type="number" step="0.01" placeholder="—" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px"></td><td>—</td><td><span class="badge b-muted">En attente</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn btn-green btn-sm">✓ Valider pesée</button>
+              <button class="btn btn-ghost btn-sm">Catégorie suivante →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h3>Récapitulatif pesée</h3></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px">
+                <span style="font-size:13px">-52kg Femmes</span>
+                <div style="display:flex;gap:6px"><span class="badge b-green">6 qualifiés</span><span class="badge b-green">✓ Terminé</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px">
+                <span style="font-size:13px">-60kg Hommes</span>
+                <div style="display:flex;gap:6px"><span class="badge b-gold">4/5 qualifiés</span><span class="badge b-gold">En cours</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px">
+                <span style="font-size:13px">-65kg Hommes</span>
+                <div style="display:flex;gap:6px"><span class="badge b-muted">En attente</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px">
+                <span style="font-size:13px">-70kg Hommes</span>
+                <div style="display:flex;gap:6px"><span class="badge b-muted">En attente</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px">
+                <span style="font-size:13px">-75kg Hommes</span>
+                <div style="display:flex;gap:6px"><span class="badge b-muted">En attente</span></div>
+              </div>
+            </div>
+            <hr class="sep">
+            <div class="alert alert-red">❌ Kim Jun (-60kg H) — Hors catégorie (+1.20kg). Action requise.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DRAW ══ -->
+    <div class="page" id="page-draw">
+      <div class="alert alert-gold">🎲 Le tirage au sort s'effectue après la pesée (Art. 6.2 IWUF) · Présence obligatoire : Président Jury, Arbitre Principal, Entraîneurs</div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3>Tirage — -60kg Hommes</h3><button class="btn btn-red btn-sm" onclick="doDraw()">🎲 Tirer au sort</button></div>
+          <div class="panel-body">
+            <div id="draw-result">
+              <div class="step-list">
+                <div class="step-item"><div class="step-num">1</div><div><b>Li Wei (CHN)</b> vs <b>Park Ji (KOR)</b></div></div>
+                <div class="step-item"><div class="step-num">2</div><div><b>Wang Lei (CHN)</b> vs <b>Chen Bo (CHN)</b></div></div>
+                <div class="step-item"><div class="step-num">SF1</div><div>Gagnant Match 1 vs Gagnant Match 2</div></div>
+                <div class="step-item"><div class="step-num">F</div><div>Finale</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h3>Statut tirage par catégorie</h3></div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Catégorie</th><th>Qualifiés</th><th>Système</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr><td>-52kg F</td><td>6</td><td>Élim. directe</td><td><span class="badge b-green">✓ Effectué</span></td></tr>
+                <tr><td>-60kg H</td><td>4</td><td>Élim. directe</td><td><span class="badge b-green">✓ Effectué</span></td></tr>
+                <tr><td>-65kg H</td><td>8</td><td>Élim. directe</td><td><span class="badge b-gold">En attente</span></td></tr>
+                <tr><td>-70kg H</td><td>6</td><td>Élim. directe</td><td><span class="badge b-muted">Pesée requise</span></td></tr>
+                <tr><td>-75kg H</td><td>—</td><td>—</td><td><span class="badge b-muted">Pesée requise</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BRACKETS ══ -->
+    <div class="page" id="page-brackets">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <select id="bracket-cat-select" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none" onchange="renderBracket()">
+          <option value="60kg H">-60kg Hommes</option>
+          <option value="52kg F">-52kg Femmes</option>
+          <option value="65kg H">-65kg Hommes</option>
+          <option value="70kg H">-70kg Hommes</option>
+        </select>
+        <button class="btn btn-ghost btn-sm">🖨️ Imprimer tableau</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3 id="bracket-title">TABLEAU — -60kg Hommes</h3></div>
+        <div class="panel-body bracket-wrap" id="bracket-container"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Podium actuel</h3></div>
+        <div class="panel-body">
+          <div class="podium">
+            <div class="podium-slot p2"><div class="podium-rank">2</div><div class="podium-bar"></div><div class="podium-name">Park Ji</div><div class="podium-country">KOR</div></div>
+            <div class="podium-slot p1"><div class="podium-rank">🥇</div><div class="podium-bar"></div><div class="podium-name">Wang Lei</div><div class="podium-country">CHN</div></div>
+            <div class="podium-slot p3"><div class="podium-rank">3</div><div class="podium-bar"></div><div class="podium-name">Li Wei</div><div class="podium-country">CHN</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCORING LIVE ══ -->
+    <div class="page" id="page-scoring">
+      <div class="alert alert-green">🥊 COMBAT EN COURS — Round <span id="live-round-num">1</span>/3 · <span id="live-cat-display">-60kg Hommes</span></div>
+
+      <div class="scoring-arena">
+        <div class="arena-header">
+          <div class="arena-fighter red-f">
+            <div class="fighter-name" id="red-name">Li Wei</div>
+            <div class="fighter-country" id="red-country">🇨🇳 CHN · -60kg H</div>
+          </div>
+          <div class="arena-vs">VS</div>
+          <div class="arena-fighter blue-f" style="text-align:right">
+            <div class="fighter-name" id="blue-name">Chen Bo</div>
+            <div class="fighter-country" id="blue-country">-60kg H · CHN 🇨🇳</div>
+          </div>
+        </div>
+
+        <div class="arena-scores">
+          <!-- RED -->
+          <div class="score-panel red-panel">
+            <div style="font-size:10px;color:var(--red);letter-spacing:2px;font-weight:700">ROUGE</div>
+            <div class="score-display" id="red-score">0</div>
+            <div class="score-actions">
+              <button class="action-btn btn-r1" onclick="addScore('red',1,'Frappe poing (tête/tronc)')">Frappe poing <span class="pts">+1</span></button>
+              <button class="action-btn btn-r2" onclick="addScore('red',2,'Frappe jambe (tête/tronc)')">Frappe jambe tête/tronc <span class="pts">+2</span></button>
+              <button class="action-btn btn-r1" onclick="addScore('red',1,'Frappe jambe (cuisse)')">Frappe jambe cuisse <span class="pts">+1</span></button>
+              <button class="action-btn btn-r2" onclick="addScore('red',2,'Mise à terre')">Mise à terre <span class="pts">+2</span></button>
+              <button class="action-btn btn-r2" onclick="addScore('red',2,'Sortie de surface')">Sortie surface adv. <span class="pts">+2</span></button>
+            </div>
+            <div class="penalties-display">
+              <div class="pen-count">劝告<br>Avert.<span id="red-avert">0</span></div>
+              <div class="pen-count">警告<br>Avis.<span id="red-avis">0</span></div>
+            </div>
+            <div class="penalty-row">
+              <button class="pen-btn" onclick="addPenalty('red','avert')">劝告 +1pt adv.</button>
+              <button class="pen-btn" onclick="addPenalty('red','avis')">警告 +2pts adv.</button>
+            </div>
+          </div>
+
+          <!-- MIDDLE -->
+          <div class="arena-middle">
+            <div class="round-label">ROUND</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:22px;color:var(--gold)" id="round-display">1 / 3</div>
+            <div class="round-timer" id="timer-display">2:00</div>
+            <div class="timer-controls">
+              <button class="btn btn-red btn-sm" id="timer-btn" onclick="toggleTimer()">▶ Start</button>
+              <button class="btn btn-ghost btn-sm" onclick="resetRound()">↺</button>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="nextRound()" style="margin-top:4px;width:100%">→ Round suivant</button>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-ko')" style="margin-top:4px;width:100%;font-size:11px">KO / Abandon</button>
+          </div>
+
+          <!-- BLUE -->
+          <div class="score-panel blue-panel">
+            <div style="font-size:10px;color:#5ba8f5;letter-spacing:2px;font-weight:700">BLEU</div>
+            <div class="score-display" id="blue-score">0</div>
+            <div class="score-actions">
+              <button class="action-btn btn-b1" onclick="addScore('blue',1,'Frappe poing (tête/tronc)')">Frappe poing <span class="pts">+1</span></button>
+              <button class="action-btn btn-b2" onclick="addScore('blue',2,'Frappe jambe (tête/tronc)')">Frappe jambe tête/tronc <span class="pts">+2</span></button>
+              <button class="action-btn btn-b1" onclick="addScore('blue',1,'Frappe jambe (cuisse)')">Frappe jambe cuisse <span class="pts">+1</span></button>
+              <button class="action-btn btn-b2" onclick="addScore('blue',2,'Mise à terre')">Mise à terre <span class="pts">+2</span></button>
+              <button class="action-btn btn-b2" onclick="addScore('blue',2,'Sortie de surface')">Sortie surface adv. <span class="pts">+2</span></button>
+            </div>
+            <div class="penalties-display">
+              <div class="pen-count">劝告<br>Avert.<span id="blue-avert">0</span></div>
+              <div class="pen-count">警告<br>Avis.<span id="blue-avis">0</span></div>
+            </div>
+            <div class="penalty-row">
+              <button class="pen-btn" onclick="addPenalty('blue','avert')">劝告 +1pt adv.</button>
+              <button class="pen-btn" onclick="addPenalty('blue','avis')">警告 +2pts adv.</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROUND TRACKER -->
+        <div style="padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-right:4px">Rounds :</span>
+          <div id="round-tracker" style="display:flex;gap:6px"></div>
+        </div>
+
+        <div class="arena-log">
+          <div class="log-title">Journal du combat</div>
+          <div id="fight-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCHEDULE ══ -->
+    <div class="page" id="page-schedule">
+      <div class="flex-between mb14">
+        <div style="display:flex;gap:8px">
+          <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+            <option>Jour 1 — 15 Nov.</option>
+            <option>Jour 2 — 16 Nov.</option>
+            <option>Jour 3 — 17 Nov.</option>
+          </select>
+          <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+            <option>Toutes catégories</option>
+            <option>-60kg H</option><option>-70kg H</option><option>-52kg F</option>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">📋 Règle IWUF : max 2 combats/athlète/jour</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Programme — Jour 1 · 15 novembre 2024</h3></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Heure</th><th>Unité</th><th>Cat.</th><th>Genre</th><th>Rouge</th><th>Bleu</th><th>Tour</th><th>Arbitre</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="text-muted">001</td><td><b>09:00</b></td><td>U1</td><td>-52kg F</td><td>F</td><td>Ana Silva</td><td>Lee Na</td><td>1/4</td><td>Zhang Wei</td><td><span class="badge b-green">Terminé</span></td><td><button class="btn btn-ghost btn-sm">Voir</button></td></tr>
+              <tr><td class="text-muted">002</td><td><b>09:20</b></td><td>U1</td><td>-52kg F</td><td>F</td><td>Liu Xia</td><td>Park Min</td><td>1/4</td><td>Zhang Wei</td><td><span class="badge b-green">Terminé</span></td><td><button class="btn btn-ghost btn-sm">Voir</button></td></tr>
+              <tr><td class="text-muted">003</td><td><b>09:40</b></td><td>U1</td><td>-60kg H</td><td>H</td><td>Li Wei</td><td>Chen Bo</td><td>1/4</td><td>Zhang Wei</td><td><span class="badge b-red">Live</span></td><td><button class="btn btn-red btn-sm" onclick="launchScoring('Li Wei','Chen Bo','-60kg H')">🥊 Live</button></td></tr>
+              <tr><td class="text-muted">004</td><td><b>10:00</b></td><td>U1</td><td>-60kg H</td><td>H</td><td>Park Ji</td><td>Wang Lei</td><td>1/4</td><td>A. Hassan</td><td><span class="badge b-gold">Prochain</span></td><td><button class="btn btn-ghost btn-sm">Préparer</button></td></tr>
+              <tr><td class="text-muted">005</td><td><b>10:20</b></td><td>U2</td><td>-70kg H</td><td>H</td><td>Kim Su</td><td>Hassan M.</td><td>1/4</td><td>M. Santos</td><td><span class="badge b-muted">Att.</span></td><td><button class="btn btn-ghost btn-sm">Préparer</button></td></tr>
+              <tr><td class="text-muted">006</td><td><b>10:40</b></td><td>U2</td><td>-52kg F</td><td>F</td><td>Mia Chen</td><td>Sara Khan</td><td>1/2</td><td>D. Volkov</td><td><span class="badge b-muted">Att.</span></td><td><button class="btn btn-ghost btn-sm">Préparer</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RANKINGS ══ -->
+    <div class="page" id="page-rankings">
+      <div class="tabs">
+        <div class="tab active" onclick="switchRankTab(this,'rank-individual')">Individuel</div>
+        <div class="tab" onclick="switchRankTab(this,'rank-team')">Équipes</div>
+      </div>
+
+      <div id="rank-individual">
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+            <option>-60kg Hommes</option><option>-52kg Femmes</option><option>-70kg Hommes</option>
+          </select>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Classement final — -60kg Hommes</h3></div>
+          <div class="panel-body">
+            <div class="podium">
+              <div class="podium-slot p2"><div class="podium-rank">2</div><div class="podium-bar"></div><div class="podium-name">Park Ji</div><div class="podium-country">KOR</div></div>
+              <div class="podium-slot p1"><div class="podium-rank">🥇</div><div class="podium-bar"></div><div class="podium-name">Wang Lei</div><div class="podium-country">CHN</div></div>
+              <div class="podium-slot p3"><div class="podium-rank">3</div><div class="podium-bar"></div><div class="podium-name">Li Wei</div><div class="podium-country">CHN</div></div>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Rang</th><th>Compétiteur</th><th>Pays</th><th>V</th><th>D</th><th>Rounds gagnés</th><th>Pts marqués</th><th>Avert.</th><th>Pts équipe</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge b-gold">🥇 1</span></td><td><b class="text-gold">Wang Lei</b></td><td>CHN</td><td>3</td><td>0</td><td>6/6</td><td>48</td><td>0</td><td>9</td></tr>
+                <tr><td><span class="badge b-muted">🥈 2</span></td><td><b>Park Ji</b></td><td>KOR</td><td>2</td><td>1</td><td>4/6</td><td>35</td><td>1</td><td>7</td></tr>
+                <tr><td><span class="badge b-muted">🥉 3</span></td><td><b>Li Wei</b></td><td>CHN</td><td>1</td><td>1</td><td>2/4</td><td>22</td><td>0</td><td>6</td></tr>
+                <tr><td><span class="badge b-muted">3</span></td><td><b>Chen Bo</b></td><td>CHN</td><td>1</td><td>1</td><td>2/4</td><td>19</td><td>2</td><td>6</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="rank-team" style="display:none">
+        <div class="panel">
+          <div class="panel-header"><h3>Classement par équipes</h3></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Rang</th><th>Équipe / Pays</th><th>Pts Nom.</th><th>Or</th><th>Argent</th><th>Bronze</th><th>Avert.</th><th>Total pts</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge b-gold">1</span></td><td><b>🇨🇳 Chine</b></td><td>42</td><td>3</td><td>1</td><td>2</td><td>3</td><td>42</td></tr>
+                <tr><td><span class="badge b-muted">2</span></td><td><b>🇰🇷 Corée du Sud</b></td><td>28</td><td>1</td><td>2</td><td>1</td><td>2</td><td>28</td></tr>
+                <tr><td><span class="badge b-muted">3</span></td><td><b>🇷🇺 Russie</b></td><td>18</td><td>0</td><td>1</td><td>2</td><td>5</td><td>18</td></tr>
+                <tr><td><span class="badge b-muted">4</span></td><td><b>🇧🇷 Brésil</b></td><td>14</td><td>0</td><td>1</td><td>1</td><td>1</td><td>14</td></tr>
+                <tr><td><span class="badge b-muted">5</span></td><td><b>🇪🇬 Égypte</b></td><td>9</td><td>0</td><td>0</td><td>1</td><td>0</td><td>9</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FORMS ══ -->
+    <div class="page" id="page-forms">
+      <div class="alert alert-gold">📄 Formulaires officiels IWUF 2024 — Annexes 7 à 11 du règlement</div>
+      <div class="grid-3">
+        <div class="panel" style="cursor:pointer" onclick="printForm('schedule')">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">📅</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">ANNEXE 7</div>
+            <div style="font-size:12px;color:var(--muted)">Programme de compétition</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Wushu Sanda Competition Schedule Form</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+        <div class="panel" style="cursor:pointer">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">📋</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">ANNEXE 8</div>
+            <div style="font-size:12px;color:var(--muted)">Ordre de passage</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Competition Match Sequence Form</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+        <div class="panel" style="cursor:pointer">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">📝</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">ANNEXE 9</div>
+            <div style="font-size:12px;color:var(--muted)">Feuille d'inscription</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Competition Registration Form</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+        <div class="panel" style="cursor:pointer">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">📊</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">ANNEXE 10</div>
+            <div style="font-size:12px;color:var(--muted)">Feuille d'enregistrement</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Recording Form (劝告/警告/下台)</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+        <div class="panel" style="cursor:pointer">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">⚖️</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">ANNEXE 11</div>
+            <div style="font-size:12px;color:var(--muted)">Feuille juge de ligne</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Sideline Judge Recording Form</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+        <div class="panel" style="cursor:pointer">
+          <div class="panel-body" style="text-align:center;padding:24px">
+            <div style="font-size:32px;margin-bottom:8px">🏅</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:4px">RÉSULTATS</div>
+            <div style="font-size:12px;color:var(--muted)">Classements complets</div>
+            <div style="font-size:11px;color:var(--green);margin-top:6px">Round-Robin Results Table (Annexe 2)</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%">🖨️ Générer / Imprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Add Competitor -->
+<div class="modal-overlay" id="modal-add-competitor" onclick="closeModalOnBg(event,'modal-add-competitor')">
+  <div class="modal">
+    <div class="modal-head"><h3>INSCRIRE UN COMPÉTITEUR</h3><button class="modal-close" onclick="closeModal('modal-add-competitor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Prénom</label><input type="text" placeholder="Prénom" id="c-fname"></div>
+        <div class="form-group"><label>Nom</label><input type="text" placeholder="Nom de famille" id="c-lname"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Pays / Région</label><input type="text" placeholder="ex: CHN" id="c-country"></div>
+        <div class="form-group"><label>Genre</label>
+          <select id="c-gender">
+            <option>Hommes</option>
+            <option>Femmes</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date de naissance</label><input type="date" id="c-dob"></div>
+        <div class="form-group"><label>Catégorie de poids</label>
+          <select id="c-weight-cat">
+            <option>-48kg</option><option>-52kg</option><option>-56kg</option><option>-60kg</option><option>-65kg</option><option>-70kg</option><option>-75kg</option><option>-80kg</option><option>-85kg</option><option>-90kg</option><option>-100kg</option><option>+100kg</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Poids déclaré (kg)</label><input type="number" step="0.1" placeholder="ex: 59.5" id="c-weight"></div>
+        <div class="form-group"><label>Entraîneur</label><input type="text" placeholder="Nom entraîneur" id="c-coach"></div>
+      </div>
+      <div class="form-group"><label>Remarques médicales</label><textarea rows="2" placeholder="Allergies, conditions particulières..." id="c-notes" style="resize:none"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-competitor')">Annuler</button>
+      <button class="btn btn-red" onclick="addCompetitor()">✓ Inscrire</button>
+    </div>
+  </div>
+</div>
+
+<!-- KO Modal -->
+<div class="modal-overlay" id="modal-ko" onclick="closeModalOnBg(event,'modal-ko')">
+  <div class="modal">
+    <div class="modal-head"><h3>FIN DE COMBAT — TYPE DE VICTOIRE</h3><button class="modal-close" onclick="closeModal('modal-ko')">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-red" onclick="endFight('KO')">🔴 KO — Mise à terre > 10 sec</button>
+        <button class="btn btn-ghost" onclick="endFight('TKO')">🟠 TKO — Supériorité technique</button>
+        <button class="btn btn-ghost" onclick="endFight('3KD')">3 knockdowns dans 1 round</button>
+        <button class="btn btn-ghost" onclick="endFight('DQ')">🚫 Disqualification (3 fautes personelles)</button>
+        <button class="btn btn-ghost" onclick="endFight('ABD')">🏳️ Abandon / Forfait (coach)</button>
+        <button class="btn btn-ghost" onclick="endFight('INJ')">🏥 Blessure — Arrêt médical</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Referee Modal -->
+<div class="modal-overlay" id="modal-referee" onclick="closeModalOnBg(event,'modal-referee')">
+  <div class="modal">
+    <div class="modal-head"><h3>AJOUTER UN ARBITRE</h3><button class="modal-close" onclick="closeModal('modal-referee')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Prénom</label><input type="text" placeholder="Prénom"></div>
+        <div class="form-group"><label>Nom</label><input type="text" placeholder="Nom"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nationalité</label><input type="text" placeholder="ex: FRA"></div>
+        <div class="form-group"><label>Rôle</label>
+          <select>
+            <option>Arbitre Principal (台上)</option>
+            <option>Juge de ligne</option>
+            <option>Chrono / Enregistrement</option>
+            <option>Arbitre Principal (Chef)</option>
+            <option>Jury d'appel</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Niveau IWUF</label>
+        <select><option>International A</option><option>International B</option><option>National A</option><option>National B</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-referee')">Annuler</button>
+      <button class="btn btn-red" onclick="closeModal('modal-referee');alert('Arbitre ajouté ✓')">✓ Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+// ══════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════
+const MEN_WEIGHTS = [
+  { kg:'48kg', range:'≤48' },{ kg:'52kg', range:'>48–52' },{ kg:'56kg', range:'>52–56' },{ kg:'60kg', range:'>56–60' },
+  { kg:'65kg', range:'>60–65' },{ kg:'70kg', range:'>65–70' },{ kg:'75kg', range:'>70–75' },{ kg:'80kg', range:'>75–80' },
+  { kg:'85kg', range:'>80–85' },{ kg:'90kg', range:'>85–90' },{ kg:'100kg', range:'>90–100' },{ kg:'+100kg', range:'>100' }
+];
+const WOMEN_WEIGHTS = [
+  { kg:'48kg', range:'≤48' },{ kg:'52kg', range:'>48–52' },{ kg:'56kg', range:'>52–56' },{ kg:'60kg', range:'>56–60' },
+  { kg:'65kg', range:'>60–65' },{ kg:'70kg', range:'>65–70' },{ kg:'75kg', range:'>70–75' },{ kg:'80kg', range:'>75–80' },
+  { kg:'85kg', range:'>80–85' },{ kg:'90kg', range:'>85–90' }
+];
+
+const selectedMenCats = new Set(['60kg','70kg','75kg','80kg','90kg']);
+const selectedWomenCats = new Set(['52kg','60kg']);
+
+let competitors = [
+  { id:1, fname:'Li', lname:'Wei', country:'CHN', gender:'H', dob:'1998-03-15', cat:'-60kg', weight:59.8, coach:'Zhang Coach', status:'qualifié' },
+  { id:2, fname:'Chen', lname:'Bo', country:'CHN', gender:'H', dob:'1999-07-22', cat:'-60kg', weight:60.0, coach:'Zhang Coach', status:'qualifié' },
+  { id:3, fname:'Park', lname:'Ji', country:'KOR', gender:'H', dob:'2000-01-10', cat:'-60kg', weight:58.8, coach:'Kim Coach', status:'qualifié' },
+  { id:4, fname:'Wang', lname:'Lei', country:'CHN', gender:'H', dob:'1997-11-05', cat:'-60kg', weight:60.0, coach:'Zhang Coach', status:'qualifié' },
+  { id:5, fname:'Ana', lname:'Silva', country:'BRA', gender:'F', dob:'2001-06-18', cat:'-52kg', weight:51.9, coach:'Santos', status:'qualifié' },
+  { id:6, fname:'Mia', lname:'Chen', country:'HKG', gender:'F', dob:'2002-09-30', cat:'-52kg', weight:52.0, coach:'Chan', status:'qualifié' },
+  { id:7, fname:'Sara', lname:'Khan', country:'PAK', gender:'F', dob:'1999-04-12', cat:'-52kg', weight:51.5, coach:'Ali', status:'qualifié' },
+  { id:8, fname:'Liu', lname:'Xia', country:'CHN', gender:'F', dob:'2000-08-25', cat:'-52kg', weight:51.8, coach:'Li Coach', status:'qualifié' },
+];
+
+const avColors = ['linear-gradient(135deg,#e63946,#f4a61a)','linear-gradient(135deg,#1d7ed8,#2ec4b6)','linear-gradient(135deg,#f4a61a,#2ec4b6)','linear-gradient(135deg,#7c3aed,#e63946)','linear-gradient(135deg,#2ec4b6,#1d7ed8)','linear-gradient(135deg,#e63946,#7c3aed)'];
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+const pageTitles = { dashboard:'Tableau de Bord', setup:'Configuration', registration:'Inscriptions', weighin:'Pesée', draw:'Tirage au Sort', brackets:'Tableau / Brackets', scoring:'Scoring Live', schedule:'Programme', rankings:'Classements', forms:'Formulaires Officiels' };
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[name] || name.toUpperCase();
+  if (name === 'registration') renderCompetitors(competitors);
+  if (name === 'setup') renderWeightCats();
+  if (name === 'brackets') renderBracket();
+}
+
+// ══════════════════════════════════════
+//  WEIGHT CATEGORIES
+// ══════════════════════════════════════
+function renderWeightCats() {
+  ['men', 'women'].forEach(g => {
+    const list = g === 'men' ? MEN_WEIGHTS : WOMEN_WEIGHTS;
+    const sel = g === 'men' ? selectedMenCats : selectedWomenCats;
+    const el = document.getElementById(g + '-weights');
+    el.innerHTML = list.map(w => `
+      <div class="weight-chip ${sel.has(w.kg.replace('kg','')) ? 'selected' : ''}" onclick="toggleWeight('${g}','${w.kg.replace('kg','')}',this)">
+        <span class="wc-kg">${w.kg}</span>
+        <span class="wc-range">${w.range}kg</span>
+      </div>
+    `).join('');
+  });
+}
+
+function toggleWeight(gender, kg, el) {
+  const sel = gender === 'men' ? selectedMenCats : selectedWomenCats;
+  if (sel.has(kg)) { sel.delete(kg); el.classList.remove('selected'); }
+  else { sel.add(kg); el.classList.add('selected'); }
+}
+
+function switchCatTab(el, id) {
+  document.querySelectorAll('.tab').forEach(t => { if(t.parentElement === el.parentElement) t.classList.remove('active'); });
+  el.classList.add('active');
+  ['cat-men','cat-women'].forEach(i => document.getElementById(i).style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+// ══════════════════════════════════════
+//  COMPETITORS
+// ══════════════════════════════════════
+function renderCompetitors(list) {
+  const tbody = document.getElementById('competitors-body');
+  tbody.innerHTML = list.map((c, i) => `
+    <tr>
+      <td class="text-muted">${String(c.id).padStart(3,'0')}</td>
+      <td><div class="comp-cell"><div class="comp-av" style="background:${avColors[i%avColors.length]}">${c.fname[0]}${c.lname[0]}</div><div><div class="comp-name">${c.fname} ${c.lname}</div><div class="comp-sub">${c.coach}</div></div></div></td>
+      <td>${c.country}</td>
+      <td><span class="badge b-red">${c.cat}</span></td>
+      <td>${c.gender === 'H' ? '♂ H' : '♀ F'}</td>
+      <td>${c.dob}</td>
+      <td>${c.weight}kg</td>
+      <td><span class="badge ${c.status==='qualifié'?'b-green':'b-gold'}">${c.status}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="removeCompetitor(${c.id})">Retirer</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterCompetitors(val) {
+  const v = val.toLowerCase();
+  renderCompetitors(competitors.filter(c => `${c.fname} ${c.lname} ${c.country}`.toLowerCase().includes(v)));
+}
+
+function filterByWeight(val) {
+  renderCompetitors(val ? competitors.filter(c => c.cat === val) : competitors);
+}
+
+function addCompetitor() {
+  const fn = document.getElementById('c-fname').value.trim();
+  const ln = document.getElementById('c-lname').value.trim();
+  if (!fn || !ln) { alert('Prénom et Nom obligatoires'); return; }
+  competitors.unshift({
+    id: competitors.length + 1,
+    fname: fn, lname: ln,
+    country: document.getElementById('c-country').value || '—',
+    gender: document.getElementById('c-gender').value === 'Hommes' ? 'H' : 'F',
+    dob: document.getElementById('c-dob').value || '—',
+    cat: '-' + document.getElementById('c-weight-cat').value,
+    weight: parseFloat(document.getElementById('c-weight').value) || 0,
+    coach: document.getElementById('c-coach').value || '—',
+    status: 'inscrit'
+  });
+  renderCompetitors(competitors);
+  closeModal('modal-add-competitor');
+}
+
+function removeCompetitor(id) {
+  if (confirm('Retirer ce compétiteur ?')) {
+    competitors = competitors.filter(c => c.id !== id);
+    renderCompetitors(competitors);
+  }
+}
+
+// ══════════════════════════════════════
+//  DRAW
+// ══════════════════════════════════════
+function doDraw() {
+  const names = ['Li Wei', 'Park Ji', 'Wang Lei', 'Chen Bo'];
+  const shuffled = names.sort(() => Math.random() - 0.5);
+  const el = document.getElementById('draw-result');
+  el.innerHTML = `<div class="alert alert-green">🎲 Tirage effectué — ${new Date().toLocaleTimeString()}</div><div class="step-list">
+    <div class="step-item"><div class="step-num">1</div><div><b>${shuffled[0]}</b> vs <b>${shuffled[1]}</b></div></div>
+    <div class="step-item"><div class="step-num">2</div><div><b>${shuffled[2]}</b> vs <b>${shuffled[3]}</b></div></div>
+    <div class="step-item"><div class="step-num">SF</div><div>Gagnant M1 vs Gagnant M2</div></div>
+    <div class="step-item"><div class="step-num">F</div><div>Finale — Podium</div></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  BRACKET
+// ══════════════════════════════════════
+const bracketData = {
+  '60kg H': {
+    r1: [{ r:'Li Wei', b:'Chen Bo', rScore:'2', bScore:'1', rWin:true }, { r:'Park Ji', b:'Wang Lei', rScore:'0', bScore:'2', rWin:false }],
+    r2: [{ r:'Li Wei', b:'Wang Lei', rScore:'?', bScore:'?', rWin:null }],
+    final: [{ r:'—', b:'—', rScore:'?', bScore:'?', rWin:null }]
+  }
+};
+
+function renderBracket() {
+  const cat = document.getElementById('bracket-cat-select').value;
+  document.getElementById('bracket-title').textContent = 'TABLEAU — -' + cat;
+  const container = document.getElementById('bracket-container');
+  const data = bracketData['60kg H'];
+
+  const rounds = [
+    { title:'1/4 de Finale', matches: data.r1 },
+    { title:'Demi-Finale', matches: data.r2 },
+    { title:'Finale', matches: data.final }
+  ];
+
+  container.innerHTML = `<div class="bracket">
+    ${rounds.map(round => `
+      <div class="bracket-round">
+        <div class="bracket-round-title">${round.title}</div>
+        ${round.matches.map(m => `
+          <div class="bracket-match ${m.rScore==='?'?'current':''}">
+            <div class="bracket-competitor ${m.rWin===true?'winner':m.rWin===false?'loser':''}">
+              <span>${m.r}</span>
+              <span class="bracket-score">${m.rScore}</span>
+            </div>
+            <div class="bracket-competitor ${m.rWin===false?'winner':m.rWin===true?'loser':''}">
+              <span>${m.b}</span>
+              <span class="bracket-score">${m.bScore}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  SCORING LIVE
+// ══════════════════════════════════════
+let redScore = 0, blueScore = 0;
+let redAvert = 0, blueAvert = 0, redAvis = 0, blueAvis = 0;
+let currentRound = 1;
+let timerRunning = false, timerSeconds = 120, timerInterval = null;
+let roundResults = [];
+const fightLog = [];
+
+function addScore(side, pts, desc) {
+  if (side === 'red') { redScore += pts; document.getElementById('red-score').textContent = redScore; }
+  else { blueScore += pts; document.getElementById('blue-score').textContent = blueScore; }
+  logEvent(`${side === 'red' ? '🔴' : '🔵'} ${desc}`, `+${pts}pt${pts>1?'s':''}`);
+  broadcastMatchState();
+}
+}
+
+function addPenalty(side, type) {
+  const opponent = side === 'red' ? 'blue' : 'red';
+  if (side === 'red') {
+    if (type === 'avert') { redAvert++; document.getElementById('red-avert').textContent = redAvert; addScore('blue', 1, 'Avertissement Rouge → Bleu +1'); }
+    else { redAvis++; document.getElementById('red-avis').textContent = redAvis; addScore('blue', 2, 'Avis Rouge → Bleu +2'); if (redAvis >= 3) alert('⚠️ DISQUALIFICATION — Rouge : 3 fautes personnelles'); }
+  } else {
+    if (type === 'avert') { blueAvert++; document.getElementById('blue-avert').textContent = blueAvert; addScore('red', 1, 'Avertissement Bleu → Rouge +1'); }
+    else { blueAvis++; document.getElementById('blue-avis').textContent = blueAvis; addScore('red', 2, 'Avis Bleu → Rouge +2'); if (blueAvis >= 3) alert('⚠️ DISQUALIFICATION — Bleu : 3 fautes personnelles'); }
+  }
+}
+
+function logEvent(desc, pts) {
+  const t = `R${currentRound} ${formatTime(120 - timerSeconds)}`;
+  fightLog.unshift({ desc, pts, t });
+  const el = document.getElementById('fight-log');
+  el.innerHTML = fightLog.slice(0,8).map(e => `<div class="log-item">${e.desc} <span>${e.pts} · ${e.t}</span></div>`).join('');
+}
+
+function toggleTimer() {
+  const btn = document.getElementById('timer-btn');
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    btn.textContent = '▶ Start';
+    btn.className = 'btn btn-red btn-sm';
+  } else {
+    timerRunning = true;
+    btn.textContent = '⏸ Pause';
+    btn.className = 'btn btn-ghost btn-sm';
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      document.getElementById('timer-display').textContent = formatTime(timerSeconds);
+      // Broadcast timer every second to all connected interfaces
+      try {
+        localStorage.setItem('sanda_timer', JSON.stringify({
+          timer: timerSeconds, round: currentRound, status: 'active', ts: Date.now()
+        }));
+      } catch(e) {}
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        btn.textContent = '▶ Start';
+        btn.className = 'btn btn-red btn-sm';
+        document.getElementById('timer-display').textContent = '0:00';
+        try { localStorage.setItem('sanda_timer', JSON.stringify({timer:0,round:currentRound,status:'paused',ts:Date.now()})); } catch(e) {}
+        alert(`⏰ FIN ROUND ${currentRound} — Rouge: ${redScore} pts · Bleu: ${blueScore} pts`);
+      }
+    }, 1000);
+  }
+}
+
+function formatTime(s) {
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function resetRound() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 120;
+  document.getElementById('timer-display').textContent = '2:00';
+  document.getElementById('timer-btn').textContent = '▶ Start';
+  document.getElementById('timer-btn').className = 'btn btn-red btn-sm';
+}
+
+function nextRound() {
+  if (currentRound >= 3) { alert('⚠️ Match déjà à 3 rounds.'); return; }
+  const winner = redScore > blueScore ? 'ROUGE' : blueScore > redScore ? 'BLEU' : 'ÉGALITÉ';
+  roundResults.push({ round: currentRound, red: redScore, blue: blueScore, winner });
+  renderRoundTracker();
+  currentRound++;
+  document.getElementById('round-display').textContent = `${currentRound} / 3`;
+  document.getElementById('live-round-num').textContent = currentRound;
+  redScore = 0; blueScore = 0;
+  redAvert = 0; blueAvert = 0; redAvis = 0; blueAvis = 0;
+  ['red-score','blue-score','red-avert','blue-avert','red-avis','blue-avis']
+    .forEach(id => document.getElementById(id).textContent = '0');
+  resetRound();
+  broadcastMatchState();
+}
+
+function renderRoundTracker() {
+  const el = document.getElementById('round-tracker');
+  el.innerHTML = roundResults.map(r => `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 10px;font-size:11px">
+      <span style="color:var(--muted)">R${r.round}</span> 
+      <span style="color:var(--red);font-weight:700">${r.red}</span>-<span style="color:#5ba8f5;font-weight:700">${r.blue}</span>
+      <span style="color:${r.winner==='ROUGE'?'var(--red)':r.winner==='BLEU'?'#5ba8f5':'var(--gold)'}"> ${r.winner}</span>
+    </div>
+  `).join('');
+}
+
+function endFight(type) {
+  closeModal('modal-ko');
+  const types = { KO:'🔴 KO', TKO:'TKO — Supériorité', '3KD':'3 KD/Round', DQ:'Disqualification', ABD:'Abandon', INJ:'Arrêt Médical' };
+  const rWins = roundResults.filter(r => r.winner === 'ROUGE').length;
+  const bWins = roundResults.filter(r => r.winner === 'BLEU').length;
+  const overall = rWins > bWins ? 'ROUGE' : 'BLEU';
+  alert(`🏆 FIN DU COMBAT\nType: ${types[type]}\nVainqueur: ${overall}\n\nRésultat: ${rWins}–${bWins} en rounds`);
+}
+
+// ── SHARED STATE BROADCAST ──────────────────────────
+function broadcastMatchState(extra={}) {
+  try {
+    const existing = JSON.parse(localStorage.getItem('sanda_match') || '{}');
+    const rn = document.getElementById('red-name')?.textContent || 'Rouge';
+    const bn = document.getElementById('blue-name')?.textContent || 'Bleu';
+    localStorage.setItem('sanda_match', JSON.stringify({
+      ...existing,
+      redName: rn, blueName: bn,
+      category: document.getElementById('live-cat-display')?.textContent || '',
+      redScores: roundResults.map(r=>r.red).concat([redScore,0,0]).slice(0,3),
+      blueScores: roundResults.map(r=>r.blue).concat([blueScore,0,0]).slice(0,3),
+      redRoundsWon: roundResults.filter(r=>r.winner==='ROUGE').length,
+      blueRoundsWon: roundResults.filter(r=>r.winner==='BLEU').length,
+      redAdmon: redAvert||0, blueAdmon: blueAvert||0,
+      redWarn: redAvis||0, blueWarn: blueAvis||0,
+      roundResults: roundResults.map((r,i)=>({round:i+1,red:r.red,blue:r.blue,
+        winner:r.winner==='ROUGE'?'red':r.winner==='BLEU'?'blue':'draw'})),
+      judgeCount: 3, status: 'active', ts: Date.now(),
+      ...extra
+    }));
+    localStorage.setItem('sanda_timer', JSON.stringify({
+      timer: timerSeconds, round: currentRound, status: timerRunning?'active':'paused',
+      ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+function launchScoring(red, blue, cat) {
+  document.getElementById('red-name').textContent = red;
+  document.getElementById('blue-name').textContent = blue;
+  document.getElementById('live-cat-display').textContent = cat;
+  redScore = 0; blueScore = 0; currentRound = 1; roundResults = [];
+  ['red-score','blue-score','red-avert','blue-avert','red-avis','blue-avis']
+    .forEach(id => document.getElementById(id).textContent = '0');
+  document.getElementById('round-display').textContent = '1 / 3';
+  document.getElementById('live-round-num').textContent = '1';
+  document.getElementById('fight-log').innerHTML = '';
+  document.getElementById('round-tracker').innerHTML = '';
+  resetRound();
+  // Initialize sanda_match + sanda_timer for all connected interfaces
+  try {
+    localStorage.setItem('sanda_match', JSON.stringify({
+      redName:red, blueName:blue, category:cat,
+      redTeam:'', blueTeam:'',
+      redScores:[0,0,0], blueScores:[0,0,0],
+      redRoundsWon:0, blueRoundsWon:0,
+      redAdmon:0, blueAdmon:0, redWarn:0, blueWarn:0,
+      redForcible:0, blueForcible:0, redOffPlatform:0, blueOffPlatform:0,
+      roundResults:[], winner:null, judgeCount:3, status:'ready', ts:Date.now()
+    }));
+    localStorage.setItem('sanda_timer', JSON.stringify({
+      timer:120, round:1, status:'ready', ts:Date.now()
+    }));
+    for(let i=1;i<=5;i++) for(let r=1;r<=3;r++) localStorage.removeItem(`sanda_j${i}_r${r}`);
+  } catch(e) {}
+  showPage('scoring', document.querySelectorAll('.nav-item')[7]);
+}
+
+// ══════════════════════════════════════
+//  RANKING TABS
+// ══════════════════════════════════════
+function switchRankTab(el, id) {
+  document.querySelectorAll('#page-rankings .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['rank-individual','rank-team'].forEach(i => document.getElementById(i).style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+// ══════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+renderCompetitors(competitors);
+renderWeightCats();
+renderBracket();
+renderRoundTracker();
+</script>
+</body>
+</html>

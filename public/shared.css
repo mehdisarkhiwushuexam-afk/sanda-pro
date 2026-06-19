@@ -1,0 +1,255 @@
+/*
+ * SANDA PRO — Design System Unifié
+ * Source de vérité unique pour tous les tokens, composants partagés
+ * et utilitaires. Inclus dans chaque interface via <link>.
+ */
+
+/* ═══════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════ */
+:root {
+  /* Backgrounds */
+  --bg:  #04060e;
+  --s1:  #080d1a;
+  --s2:  #0e1525;
+  --s3:  #141d30;
+  --b1:  #1a2438;
+  --b2:  #233050;
+
+  /* Brand colours */
+  --acc:    #c9f135;
+  --red:    #ff2d55;
+  --blue:   #00aaff;
+  --green:  #35f5a0;
+  --gold:   #ffd60a;
+  --warn:   #ff9500;
+  --purple: #a855f7;
+
+  /* Text */
+  --txt:    #eef2ff;
+  --muted:  #3d4d70;
+  --muted2: #6a7a9a;
+
+  /* Typography */
+  --disp: 'Bebas Neue', sans-serif;
+  --font: 'IBM Plex Mono', monospace;
+
+  /* Transitions */
+  --tr-fast: 0.12s ease;
+  --tr-med:  0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════ */
+html, body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--font);
+}
+
+/* ═══════════════════════════════════════════════════
+   TOAST SYSTÈME (remplace les injections inline)
+═══════════════════════════════════════════════════ */
+#sp-toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.sp-toast {
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-family: var(--disp);
+  font-size: 16px;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.5);
+  animation: spToastIn .25s ease;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+
+.sp-toast.exiting {
+  animation: spToastOut .25s ease forwards;
+}
+
+@keyframes spToastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spToastOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(8px); }
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL SYSTÈME (remplace confirm() natif)
+═══════════════════════════════════════════════════ */
+#sp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,6,14,.85);
+  backdrop-filter: blur(8px);
+  z-index: 8000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#sp-modal-backdrop.open {
+  display: flex;
+}
+
+.sp-modal {
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 16px;
+  padding: 28px 32px;
+  min-width: 320px;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  animation: spModalIn .2s ease;
+}
+
+@keyframes spModalIn {
+  from { opacity: 0; transform: scale(.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.sp-modal-icon {
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.sp-modal-title {
+  font-family: var(--disp);
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--txt);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.sp-modal-body {
+  font-size: 12px;
+  color: var(--muted2);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.sp-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.sp-modal-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-family: var(--disp);
+  font-size: 17px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+  flex: 1;
+}
+
+.sp-modal-btn:active {
+  transform: scale(.97);
+}
+
+.sp-modal-btn-cancel {
+  background: var(--b1);
+  color: var(--muted2);
+  border: 1px solid var(--b2);
+}
+
+.sp-modal-btn-cancel:hover {
+  background: var(--b2);
+  color: var(--txt);
+}
+
+.sp-modal-btn-confirm {
+  background: var(--red);
+  color: #fff;
+}
+
+.sp-modal-btn-confirm:hover {
+  background: #ff4466;
+}
+
+.sp-modal-btn-confirm.acc {
+  background: var(--acc);
+  color: #000;
+}
+
+/* ═══════════════════════════════════════════════════
+   STATUS / BADGE
+═══════════════════════════════════════════════════ */
+.sp-status {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.sp-status.active   { background: rgba(255,45,85,.1);  color: var(--red);   border: 1px solid rgba(255,45,85,.3); }
+.sp-status.paused   { background: rgba(255,149,0,.1);  color: var(--warn);  border: 1px solid rgba(255,149,0,.3); }
+.sp-status.ready    { background: rgba(201,241,53,.08); color: var(--acc);  border: 1px solid rgba(201,241,53,.2); }
+.sp-status.finished { background: rgba(53,245,160,.08); color: var(--green);border: 1px solid rgba(53,245,160,.2); }
+
+/* ═══════════════════════════════════════════════════
+   LIVE PULSE ANIMATIONS
+═══════════════════════════════════════════════════ */
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,45,85,.6); }
+  50%       { box-shadow: 0 0 0 6px rgba(255,45,85,0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .4; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════
+   STORAGE GUARD — bannière si localStorage indisponible
+═══════════════════════════════════════════════════ */
+#sp-storage-warning {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--red);
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  font-family: var(--disp);
+  font-size: 15px;
+  letter-spacing: 2px;
+  z-index: 9999;
+}

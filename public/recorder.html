@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RECORDER OFFICIEL — Wushu Sanda IWUF 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060810;--s1:#0b0f1a;--s2:#111828;--s3:#192033;--b1:#1d2840;--b2:#263354;
+  --red:#ff2d55;--blue:#0af;--acc:#c9f135;--gold:#ffd60a;--warn:#ff9500;--green:#35f5a0;
+  --txt:#f0f4ff;--muted:#4a5880;--muted2:#7a8aaa;
+  --disp:'Bebas Neue',sans-serif;--font:'IBM Plex Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* ── HEADER ── */
+header{background:var(--s1);border-bottom:1px solid var(--b1);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.h-badge{background:var(--acc);color:#000;font-family:var(--disp);font-size:11px;
+  padding:3px 10px;border-radius:4px;letter-spacing:2px}
+.h-title{font-family:var(--disp);font-size:16px;letter-spacing:3px}
+.h-meta{font-size:10px;color:var(--muted);letter-spacing:1px}
+.h-right{display:flex;align-items:center;gap:8px}
+
+/* ── LAYOUT ── */
+#body{flex:1;display:flex;overflow:hidden}
+.left-col{width:260px;background:var(--s1);border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.center-col{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.right-col{width:220px;background:var(--s1);border-left:1px solid var(--b1);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+
+/* ── PANEL HEADER ── */
+.col-head{padding:10px 14px;border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.col-title{font-size:10px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.col-body{flex:1;overflow-y:auto;padding:12px 14px}
+
+/* ── MATCH STATUS ── */
+.match-status{background:var(--s2);border:1px solid var(--b1);border-radius:10px;
+  padding:12px;margin-bottom:12px}
+.ms-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ms-label{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.ms-val{font-family:var(--disp);font-size:16px;letter-spacing:1px}
+.ms-timer{font-family:var(--disp);font-size:38px;letter-spacing:-2px;text-align:center;
+  padding:6px 0;color:var(--txt)}
+.ms-timer.danger{color:var(--red);animation:tdanger .6s infinite}
+@keyframes tdanger{0%,100%{opacity:1}50%{opacity:.4}}
+.ms-round{font-size:10px;color:var(--muted);letter-spacing:2px;text-align:center;text-transform:uppercase}
+
+/* ── SCORE ENTRY ── */
+.score-entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.se-panel{background:var(--s2);border:1px solid;border-radius:10px;padding:10px;
+  display:flex;flex-direction:column;gap:6px}
+.se-panel.red{border-color:rgba(255,45,85,.3)}
+.se-panel.blue{border-color:rgba(0,170,255,.3)}
+.se-label{font-family:var(--disp);font-size:14px;letter-spacing:2px;text-align:center}
+.se-label.red{color:var(--red)}
+.se-label.blue{color:var(--blue)}
+.se-name{font-size:10px;color:var(--muted2);text-align:center;margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.se-score-big{font-family:var(--disp);font-size:60px;text-align:center;line-height:1;letter-spacing:-2px}
+.se-score-big.red{color:var(--red)}
+.se-score-big.blue{color:var(--blue)}
+.se-total{font-size:10px;color:var(--muted);text-align:center}
+
+.score-btns{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.sb-btn{border:none;border-radius:6px;padding:8px 4px;font-family:var(--disp);
+  font-size:14px;letter-spacing:1px;cursor:pointer;transition:all .1s;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.sb-btn:active{transform:scale(.95)}
+.sb-sub{font-size:8px;font-family:var(--font);opacity:.65;letter-spacing:.3px}
+
+.sb-r1{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.2);color:var(--red)}
+.sb-r1:active{background:rgba(255,45,85,.25)}
+.sb-r2{background:rgba(255,45,85,.15);border:1px solid rgba(255,45,85,.3);color:var(--red)}
+.sb-r2:active{background:rgba(255,45,85,.3)}
+.sb-b1{background:rgba(0,170,255,.1);border:1px solid rgba(0,170,255,.2);color:var(--blue)}
+.sb-b1:active{background:rgba(0,170,255,.25)}
+.sb-b2{background:rgba(0,170,255,.15);border:1px solid rgba(0,170,255,.3);color:var(--blue)}
+.sb-b2:active{background:rgba(0,170,255,.3)}
+.sb-undo{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--muted2);width:100%;
+  border-radius:6px;padding:6px;font-family:var(--font);font-size:10px;cursor:pointer;
+  letter-spacing:.3px;margin-top:2px}
+.sb-undo:active{background:rgba(255,255,255,.1)}
+
+/* ── PENALTIES COUNTERS ── */
+.pen-table{width:100%}
+.pen-row{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.pen-row:last-child{border-bottom:none}
+.pen-label{font-size:11px;color:var(--muted2);flex:1}
+.pen-counts{display:flex;gap:6px;align-items:center}
+.pen-val{font-family:var(--disp);font-size:22px;min-width:28px;text-align:center}
+.pen-val.red{color:var(--red)}
+.pen-val.blue{color:var(--blue)}
+
+/* ── OFFICIAL RECORD TABLE ── */
+.official-table{width:100%;border-collapse:collapse;font-size:11px}
+.official-table th{background:var(--s2);padding:7px 8px;text-align:left;
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+  border-bottom:1px solid var(--b1);font-weight:500}
+.official-table td{padding:8px 8px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.official-table tr:hover td{background:rgba(255,255,255,.02)}
+.ot-round{font-family:var(--disp);font-size:16px;color:var(--muted)}
+.ot-side{font-size:10px;font-weight:700;letter-spacing:.5px}
+.ot-type{font-size:10px;color:var(--muted2)}
+.ot-pts{font-family:var(--disp);font-size:18px;color:var(--acc)}
+.ot-time{font-size:10px;color:var(--muted);font-family:var(--disp)}
+.ot-undo{background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:14px;padding:2px 6px;border-radius:4px;transition:color .1s}
+.ot-undo:hover{color:var(--red)}
+
+/* ── ROUND SUMMARY ── */
+.round-summary{background:var(--s2);border:1px solid var(--b1);border-radius:10px;
+  padding:12px;margin-bottom:10px}
+.rs-title{font-family:var(--disp);font-size:14px;letter-spacing:2px;color:var(--muted2);
+  margin-bottom:8px}
+.rs-row{display:flex;align-items:center;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.rs-row:last-child{border-bottom:none}
+.rs-label{color:var(--muted2)}
+.rs-val-r{font-family:var(--disp);font-size:20px;color:var(--red)}
+.rs-val-b{font-family:var(--disp);font-size:20px;color:var(--blue)}
+.rs-winner{font-family:var(--disp);font-size:14px;letter-spacing:1px;
+  padding:3px 10px;border-radius:6px;text-align:center;margin-top:6px;border:1px solid}
+.rs-winner.red{color:var(--red);border-color:rgba(255,45,85,.3);background:rgba(255,45,85,.08)}
+.rs-winner.blue{color:var(--blue);border-color:rgba(0,170,255,.3);background:rgba(0,170,255,.08)}
+.rs-winner.draw{color:var(--acc);border-color:rgba(201,241,53,.3);background:rgba(201,241,53,.08)}
+
+/* ── SIGNATURE SECTION ── */
+.sign-section{border-top:1px solid var(--b1);padding:10px 14px;flex-shrink:0}
+.sign-row{display:flex;gap:8px;margin-bottom:6px}
+.sign-inp{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:6px;
+  padding:7px 10px;color:var(--txt);font-family:var(--font);font-size:11px;outline:none}
+.sign-inp:focus{border-color:var(--acc)}
+.sign-btn{background:var(--acc);color:#000;border:none;border-radius:6px;
+  padding:7px 14px;font-family:var(--disp);font-size:14px;letter-spacing:1px;cursor:pointer}
+.sign-btn:active{background:#d4fb3c}
+
+/* ── PRINT BTN ── */
+.print-btn{background:rgba(201,241,53,.1);border:1px solid rgba(201,241,53,.3);
+  color:var(--acc);border-radius:8px;padding:8px 14px;font-family:var(--disp);
+  font-size:14px;letter-spacing:1px;cursor:pointer;width:100%;transition:all .15s}
+.print-btn:active{background:rgba(201,241,53,.2)}
+
+/* ── VERDICT BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:rgba(53,245,160,.1);color:var(--green)}
+.badge-gray{background:var(--b1);color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="h-badge">RECORDER</div>
+      <div>
+        <div class="h-title">ENREGISTREUR OFFICIEL</div>
+        <div class="h-meta">Appendix 10 — IWUF 2024 • Art. 27</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div id="hd-cat" style="font-family:var(--disp);font-size:14px;letter-spacing:2px;color:var(--acc)">—</div>
+      <div id="hd-match" style="font-size:10px;color:var(--muted)">En attente du match</div>
+    </div>
+    <div class="h-right">
+      <button class="print-btn" style="width:auto;padding:6px 14px;font-size:12px" onclick="printForm()">🖨 Imprimer</button>
+      <button onclick="openSetup()" style="background:rgba(255,255,255,.04);border:1px solid var(--b1);
+        color:var(--muted2);border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:11px;cursor:pointer">⚙ Config</button>
+    </div>
+  </header>
+
+  <div id="body">
+    <!-- LEFT: Score entry -->
+    <div class="left-col">
+      <div class="col-head">
+        <span class="col-title">SAISIE DES POINTS</span>
+        <span id="hd-round-pill" style="font-family:var(--disp);font-size:14px;color:var(--acc);letter-spacing:1px">R1</span>
+      </div>
+      <div class="col-body">
+        <!-- Timer display -->
+        <div class="match-status">
+          <div class="ms-timer" id="ms-timer">2:00</div>
+          <div class="ms-round" id="ms-round">ROUND 1 / 3</div>
+        </div>
+
+        <!-- Score entry panels -->
+        <div class="score-entry-grid">
+          <div class="se-panel red">
+            <div class="se-label red">ROUGE</div>
+            <div class="se-name" id="se-red-name">—</div>
+            <div class="se-score-big red" id="se-red-score">0</div>
+            <div class="se-total" id="se-red-total">Total: 0</div>
+  <div class="se-total" id="se-red-kd" style="color:var(--warn);font-size:9px">KD: 0/3</div>
+            <div class="score-btns">
+              <button class="sb-btn sb-r1" onclick="rec('red','punch_head',1)">+1<span class="sb-sub">Poing</span></button>
+              <button class="sb-btn sb-r2" onclick="rec('red','kick_head',2)">+2<span class="sb-sub">Pied</span></button>
+              <button class="sb-btn sb-r1" onclick="rec('red','kick_thigh',1)">+1<span class="sb-sub">Cuisse</span></button>
+              <button class="sb-btn sb-r2" onclick="rec('red','knockdown',2)">+2<span class="sb-sub">Sol</span></button>
+              <button class="sb-btn sb-r2" onclick="rec('red','offplatform',2)">+2<span class="sb-sub">Hors</span></button>
+              <button class="sb-btn sb-r2" onclick="rec('red','penalty',2)">+2<span class="sb-sub">Pénalité</span></button>
+            </div>
+            <button class="sb-undo" onclick="undoLast('red')">↩ Annuler dernier</button>
+          </div>
+          <div class="se-panel blue">
+            <div class="se-label blue">BLEU</div>
+            <div class="se-name" id="se-blue-name">—</div>
+            <div class="se-score-big blue" id="se-blue-score">0</div>
+            <div class="se-total" id="se-blue-total">Total: 0</div>
+  <div class="se-total" id="se-blue-kd" style="color:var(--warn);font-size:9px">KD: 0/3</div>
+            <div class="score-btns">
+              <button class="sb-btn sb-b1" onclick="rec('blue','punch_head',1)">+1<span class="sb-sub">Poing</span></button>
+              <button class="sb-btn sb-b2" onclick="rec('blue','kick_head',2)">+2<span class="sb-sub">Pied</span></button>
+              <button class="sb-btn sb-b1" onclick="rec('blue','kick_thigh',1)">+1<span class="sb-sub">Cuisse</span></button>
+              <button class="sb-btn sb-b2" onclick="rec('blue','knockdown',2)">+2<span class="sb-sub">Sol</span></button>
+              <button class="sb-btn sb-b2" onclick="rec('blue','offplatform',2)">+2<span class="sb-sub">Hors</span></button>
+              <button class="sb-btn sb-b2" onclick="rec('blue','penalty',2)">+2<span class="sb-sub">Pénalité</span></button>
+            </div>
+            <button class="sb-undo" onclick="undoLast('blue')">↩ Annuler dernier</button>
+          </div>
+        </div>
+
+        <!-- Penalty counters -->
+        <div style="background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:10px;margin-bottom:10px">
+          <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">COMPTEURS PÉNALITÉS</div>
+          <div class="pen-table">
+            <div class="pen-row">
+              <span class="pen-label">Admonitions</span>
+              <div class="pen-counts">
+                <span class="pen-val red" id="pc-red-admon">0</span>
+                <span style="color:var(--muted);font-size:11px">|</span>
+                <span class="pen-val blue" id="pc-blue-admon">0</span>
+              </div>
+            </div>
+            <div class="pen-row">
+              <span class="pen-label">Avertissements</span>
+              <div class="pen-counts">
+                <span class="pen-val red" id="pc-red-warn">0</span>
+                <span style="color:var(--muted);font-size:11px">|</span>
+                <span class="pen-val blue" id="pc-blue-warn">0</span>
+              </div>
+            </div>
+            <div class="pen-row">
+              <span class="pen-label">Hors plateforme</span>
+              <div class="pen-counts">
+                <span class="pen-val red" id="pc-red-off">0</span>
+                <span style="color:var(--muted);font-size:11px">|</span>
+                <span class="pen-val blue" id="pc-blue-off">0</span>
+              </div>
+            </div>
+            <div class="pen-row">
+              <span class="pen-label">Lectures forcées</span>
+              <div class="pen-counts">
+                <span class="pen-val red" id="pc-red-fc">0</span>
+                <span style="color:var(--muted);font-size:11px">|</span>
+                <span class="pen-val blue" id="pc-blue-fc">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign section -->
+        <div class="sign-section" style="padding:0">
+          <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">SIGNATURE RECORDER</div>
+          <div class="sign-row">
+            <input class="sign-inp" id="sign-name" placeholder="Nom du recorder">
+            <button class="sign-btn" onclick="signRecord()">SIGNER</button>
+          </div>
+          <div id="sign-status" style="font-size:10px;color:var(--muted);text-align:center"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Official record table -->
+    <div class="center-col">
+      <div class="col-head">
+        <span class="col-title">TABLEAU OFFICIEL — APPENDIX 10</span>
+        <div style="display:flex;gap:6px">
+          <button onclick="clearRound()" style="background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.2);
+            color:var(--red);border-radius:6px;padding:4px 10px;font-family:var(--font);font-size:10px;cursor:pointer">
+            Effacer round
+          </button>
+          <span id="rec-status" class="badge badge-gray">EN ATTENTE</span>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        <table class="official-table" id="rec-table">
+          <thead>
+            <tr>
+              <th>R</th><th>Côté</th><th>Action</th><th>Pts</th>
+              <th>Chrono</th><th>Cumul R</th><th>Cumul B</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="rec-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted);font-size:11px">
+              Aucun événement enregistré
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer totals -->
+      <div style="border-top:1px solid var(--b1);padding:12px 16px;background:var(--s1);flex-shrink:0">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">TOTAL ROUGE</div>
+            <div style="font-family:var(--disp);font-size:36px;color:var(--red)" id="ft-red-total">0</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">VAINQUEUR MATCH</div>
+            <div style="font-family:var(--disp);font-size:22px;letter-spacing:2px" id="ft-winner">—</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">TOTAL BLEU</div>
+            <div style="font-family:var(--disp);font-size:36px;color:var(--blue)" id="ft-blue-total">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Round summaries + judge verdicts -->
+    <div class="right-col">
+      <div class="col-head"><span class="col-title">RÉSUMÉ ROUNDS</span></div>
+      <div class="col-body">
+        <div id="round-summaries">
+          <!-- filled by JS -->
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">VERDICTS JUGES</div>
+          <div id="judge-verdicts">
+            <!-- filled by JS -->
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <button class="print-btn" onclick="printForm()">🖨 Imprimer Formulaire Officiel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div id="setup-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);
+  backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;width:380px;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--b1);font-family:var(--disp);font-size:18px;letter-spacing:2px;color:var(--acc)">⚙ CONFIGURATION</div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+      <div><label style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">Nom Recorder</label>
+      <input class="sign-inp" id="cfg-recorder" placeholder="Votre nom" style="width:100%;background:var(--s3);border:1px solid var(--b1);border-radius:8px;padding:9px 12px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none"></div>
+      <div><label style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">Catégorie</label>
+      <input class="sign-inp" id="cfg-cat" placeholder="Ex: Adultes Hommes 70kg" style="width:100%;background:var(--s3);border:1px solid var(--b1);border-radius:8px;padding:9px 12px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none"></div>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid var(--b1);display:flex;justify-content:flex-end;gap:8px">
+      <button onclick="closeSetup()" style="background:transparent;border:1px solid var(--b1);color:var(--txt);border-radius:8px;padding:8px 16px;font-family:var(--font);font-size:12px;cursor:pointer">Annuler</button>
+      <button onclick="saveSetup()" style="background:var(--acc);color:#000;border:none;border-radius:8px;padding:8px 16px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+const fmt2 = n => String(n).padStart(2,'0');
+const fmtTime = s => `${Math.floor(s/60)}:${fmt2(s%60)}`;
+
+let REC = {
+  recorderName: '',
+  category: '',
+  round: 1,
+  timer: 120,
+  redName: 'Rouge', blueName: 'Bleu',
+  events: [],          // {id, side, type, pts, round, timer}
+  roundResults: [],
+  signed: false
+};
+
+// ── SCORE RECORDING ──
+const TYPE_LABELS = {
+  punch_head:'Poing Tête/Torse', kick_head:'Pied Tête/Torse',
+  kick_thigh:'Pied Cuisse', knockdown:'Mise au sol',
+  offplatform:'Hors plateforme', penalty:'Pénalité reçue'
+};
+
+function rec(side, type, pts){
+  const ev = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
+    side, type, pts, round: REC.round, timer: REC.timer,
+    ts: Date.now()
+  };
+  REC.events.push(ev);
+  broadcastRecorderData();
+  renderAll();
+  if(navigator.vibrate) navigator.vibrate(pts===2?[40,15,40]:25);
+}
+
+function undoLast(side){
+  const idx = [...REC.events].reverse().findIndex(e=>e.side===side&&e.round===REC.round);
+  if(idx === -1) return;
+  REC.events.splice(REC.events.length-1-idx, 1);
+  broadcastRecorderData();
+  renderAll();
+}
+
+function clearRound(){
+  if(!confirm(`Effacer tous les événements du round ${REC.round} ?`)) return;
+  REC.events = REC.events.filter(e=>e.round!==REC.round);
+  renderAll();
+}
+
+// ── CALC ──
+const eventsForRound = (side, r) => REC.events.filter(e=>e.side===side&&e.round===r);
+const scoreForRound  = (side, r) => eventsForRound(side,r).reduce((a,e)=>a+e.pts,0);
+const totalScore     = side => REC.events.filter(e=>e.side===side).reduce((a,e)=>a+e.pts,0);
+const penCount = (side, type) => REC.events.filter(e=>e.side===side&&e.type===type).length;
+
+// ── RENDER ──
+function renderAll(){
+  const ri = REC.round-1;
+  const rs = scoreForRound('red', REC.round);
+  const bs = scoreForRound('blue', REC.round);
+  const rt = totalScore('red'), bt = totalScore('blue');
+
+  document.getElementById('se-red-score').textContent = rs;
+  document.getElementById('se-blue-score').textContent = bs;
+  document.getElementById('se-red-total').textContent = `Total: ${rt}`;
+  document.getElementById('se-blue-total').textContent = `Total: ${bt}`;
+  // KD counts from chef broadcast
+  const mKD = SP.store.get('sanda_match');
+  if(mKD){
+    const rkd = mKD.redKD||0, bkd = mKD.blueKD||0;
+    const rkdEl = document.getElementById('se-red-kd');
+    const bkdEl = document.getElementById('se-blue-kd');
+    if(rkdEl) rkdEl.textContent = `KD: ${rkd}/3`;
+    if(bkdEl) bkdEl.textContent = `KD: ${bkd}/3`;
+  }
+  document.getElementById('se-red-name').textContent = REC.redName.toUpperCase();
+  document.getElementById('se-blue-name').textContent = REC.blueName.toUpperCase();
+  document.getElementById('ms-round').textContent = `ROUND ${REC.round} / 3`;
+  document.getElementById('hd-round-pill').textContent = `R${REC.round}`;
+
+  // Penalty counters
+  ['admon','warn','off','fc'].forEach(t=>{
+    const typeMap={admon:'admon_opp',warn:'warning_opp',off:'offplatform',fc:'forcible'};
+    document.getElementById(`pc-red-${t}`).textContent = penCount('red', typeMap[t]);
+    document.getElementById(`pc-blue-${t}`).textContent = penCount('blue', typeMap[t]);
+  });
+
+  // Footer totals
+  document.getElementById('ft-red-total').textContent = rt;
+  document.getElementById('ft-blue-total').textContent = bt;
+
+  // Official table
+  renderTable();
+  renderRoundSummaries();
+  renderJudgeVerdicts();
+
+  // Winner
+  const m = SP.store.get('sanda_match');
+  if(m?.winner){
+    const wn = m.winner==='red'?REC.redName:REC.blueName;
+    const wc = m.winner==='red'?'var(--red)':'var(--blue)';
+    document.getElementById('ft-winner').textContent = wn.toUpperCase();
+    document.getElementById('ft-winner').style.color = wc;
+  }
+
+  // Header
+  document.getElementById('hd-cat').textContent = (REC.category||'SANDA IWUF 2024').toUpperCase();
+  document.getElementById('hd-match').textContent =
+    `${REC.redName.toUpperCase()} vs ${REC.blueName.toUpperCase()}`;
+}
+
+function renderTable(){
+  const tbody = document.getElementById('rec-tbody');
+  if(!REC.events.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);font-size:11px">Aucun événement enregistré</td></tr>`;
+    return;
+  }
+  // Build running totals
+  let rCum=0, bCum=0;
+  const rows = REC.events.map((e,i)=>{
+    if(e.side==='red') rCum+=e.pts; else bCum+=e.pts;
+    const clr = e.side==='red'?'var(--red)':'var(--blue)';
+    const heure = e.ts ? new Date(e.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—';
+    return`<tr>
+      <td class="ot-round">R${e.round}</td>
+      <td><span class="ot-side" style="color:${clr}">${e.side==='red'?'RGE':'BLE'}</span></td>
+      <td class="ot-type">${TYPE_LABELS[e.type]||e.type}</td>
+      <td class="ot-pts">+${e.pts}</td>
+      <td class="ot-time">${fmtTime(e.timer)}</td>
+      <td class="ot-time" style="font-size:9px;color:var(--muted2)">${heure}</td>
+      <td style="font-family:var(--disp);font-size:16px;color:var(--red)">${rCum}</td>
+      <td style="font-family:var(--disp);font-size:16px;color:var(--blue)">${bCum}</td>
+      <td><button class="ot-undo" onclick="removeEvent('${e.id}')">✕</button></td>
+    </tr>`;
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+function removeEvent(id){
+  REC.events = REC.events.filter(e=>e.id!==id);
+  renderAll();
+}
+
+function renderRoundSummaries(){
+  const m = SP.store.get('sanda_match');
+  const results = m?.roundResults||[];
+  const rs = document.getElementById('round-summaries');
+  if(!results.length){
+    rs.innerHTML=`<div style="color:var(--muted);font-size:11px;padding:6px 0">Aucun round terminé</div>`;
+    return;
+  }
+  rs.innerHTML = results.map(r=>{
+    const wc=r.winner==='red'?'var(--red)':r.winner==='blue'?'var(--blue)':'var(--acc)';
+    const wt=r.winner==='red'?REC.redName.toUpperCase():r.winner==='blue'?REC.blueName.toUpperCase():'ÉGALITÉ';
+    return`<div class="round-summary">
+      <div class="rs-title">ROUND ${r.round}</div>
+      <div class="rs-row"><span class="rs-label">Rouge</span><span class="rs-val-r">${r.red}</span></div>
+      <div class="rs-row"><span class="rs-label">Bleu</span><span class="rs-val-b">${r.blue}</span></div>
+      <div class="rs-winner ${r.winner}" style="color:${wc};border-color:${wc}20;background:${wc}10">${wt}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderJudgeVerdicts(){
+  const m = SP.store.get('sanda_match');
+  const jc = m?.judgeCount||3;
+  const jv = document.getElementById('judge-verdicts');
+  let html='';
+  for(let i=1;i<=jc;i++){
+    const d=SP.store.get(`sanda_j${i}_r${REC.round}`);
+    const sub=d&&d.round===REC.round;
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;
+      padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px">
+      <span style="color:var(--muted2)">Juge #${i}</span>
+      ${sub
+        ?`<span style="display:flex;gap:5px;align-items:center">
+            <span style="color:var(--red);font-family:var(--disp);font-size:14px">${d.red}</span>
+            <span style="color:var(--muted);font-size:10px">—</span>
+            <span style="color:var(--blue);font-family:var(--disp);font-size:14px">${d.blue}</span>
+            <span class="badge badge-green" style="font-size:9px">✓</span>
+          </span>`
+        :`<span class="badge badge-gray">attente</span>`}
+    </div>`;
+  }
+  jv.innerHTML=html;
+}
+
+// ── BROADCAST RECORDER DATA ──
+function broadcastRecorderData(){
+  SP.bc.publish('sanda_recorder', {
+    events: REC.events,
+    round: REC.round,
+    redTotal: totalScore('red'),
+    blueTotal: totalScore('blue'),
+    ts: Date.now()
+  });
+}
+
+// ── SIGN ──
+function signRecord(){
+  const name=document.getElementById('sign-name').value.trim();
+  if(!name){alert('Entrez votre nom');return;}
+  REC.recorderName=name;
+  REC.signed=true;
+  document.getElementById('sign-status').innerHTML=
+    `<span style="color:var(--green)">✓ Signé par ${name} — ${new Date().toLocaleTimeString('fr-FR')}</span>`;
+  document.getElementById('rec-status').className='badge badge-green';
+  document.getElementById('rec-status').textContent='SIGNÉ';
+  SP.bc.publish('sanda_recorder_signed', {name, ts:Date.now()});
+}
+
+
+// ── EXPORT CSV ──────────────────────────────────────────────────────────────
+function exportCSV(){
+  const m = SP.store.get('sanda_match') || {};
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR').replace(/\//g,'-');
+  const timeStr = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}).replace(':','-');
+
+  const header = [
+    'Round','Côté','Action','Points','Chrono','Heure','Cumul Rouge','Cumul Bleu'
+  ];
+
+  let rCum=0, bCum=0;
+  const rows = REC.events.map(e=>{
+    if(e.side==='red') rCum+=e.pts; else bCum+=e.pts;
+    const heure = e.ts ? new Date(e.ts).toLocaleTimeString('fr-FR') : '';
+    return [
+      `R${e.round}`,
+      e.side==='red'?'ROUGE':'BLEU',
+      TYPE_LABELS[e.type]||e.type,
+      `+${e.pts}`,
+      fmtTime(e.timer),
+      heure,
+      rCum,
+      bCum
+    ];
+  });
+
+  // Summary footer
+  const jc = m.judgeCount||3;
+  const judgeRows = [];
+  for(let i=1;i<=jc;i++){
+    const d = SP.store.get(`sanda_j${i}_r${REC.round}`);
+    if(d) judgeRows.push(['','',`Juge #${i} — Verdict R${d.round}`,
+      `Rouge:${d.red} Bleu:${d.blue}`,d.verdict?.toUpperCase()||'','','','']);
+  }
+
+  const csv = [
+    // Meta
+    [`SANDA PRO — APPENDIX 10 IWUF 2024`],[],
+    [`Catégorie`,REC.category||'—'],
+    [`Rouge`,REC.redName,`Bleu`,REC.blueName],
+    [`KD Rouge`,m.redKD||0,`KD Bleu`,m.blueKD||0],
+    [`Vainqueur`,m.winner?(m.winner==='red'?REC.redName:REC.blueName):'—'],
+    [`Recorder`,REC.recorderName||'—',`Date`,dateStr,`Heure`,timeStr],
+    [],
+    header,
+    ...rows,
+    [],
+    [`Résultats par round`],
+    [`Round`,`Score Rouge`,`Score Bleu`,`Vainqueur`],
+    ...(m.roundResults||[]).map(r=>[
+      `Round ${r.round}`, r.red, r.blue,
+      r.winner==='red'?REC.redName:r.winner==='blue'?REC.blueName:'ÉGALITÉ'
+    ]),
+    [],
+    [`Verdicts juges`],
+    ...judgeRows
+  ].map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sanda_pro_${REC.redName.replace(/\s/g,'_')}_vs_${REC.blueName.replace(/\s/g,'_')}_${dateStr}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  SP.toast('✓ Export CSV téléchargé', 'var(--green)', '#000', 2500);
+}
+
+// ── PRINT APPENDIX 10 ──
+function printForm(){
+  const m=SP.store.get('sanda_match')||{};
+  const results=m.roundResults||[];
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Tableau de Bord Recorder — IWUF 2024</title>
+  <style>
+    body{font-family:'Courier New',monospace;padding:20px;font-size:11px;color:#000}
+    h2{font-size:15px;margin-bottom:4px}
+    .sub{font-size:10px;color:#666;margin-bottom:14px}
+    table{border-collapse:collapse;width:100%;margin-bottom:16px}
+    th,td{border:1px solid #333;padding:5px 8px;text-align:left}
+    th{background:#111;color:#fff;font-size:10px}
+    .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+    .sum-box{border:1px solid #333;padding:10px;border-radius:4px}
+    .sum-label{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+    .sum-val{font-size:22px;font-weight:900}
+    .sign-line{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+    .sig{border-top:1px solid #333;padding-top:6px;font-size:10px}
+    @media print{body{padding:10px}}
+  </style></head><body>
+  <h2>记录表 — Tableau de Bord du Recorder (Appendix 10 — IWUF 2024)</h2>
+  <div class="sub">
+    Catégorie: ${REC.category||'—'} &nbsp;|&nbsp;
+    KD Rouge: ${m.redKD||0} / KD Bleu: ${m.blueKD||0} &nbsp;|&nbsp;
+    
+    Rouge: ${REC.redName} &nbsp;|&nbsp; Bleu: ${REC.blueName} &nbsp;|&nbsp;
+    Date: ${new Date().toLocaleDateString('fr-FR')} &nbsp;|&nbsp;
+    Recorder: ${REC.recorderName||'—'}
+  </div>
+  <div class="summary">
+    <div class="sum-box"><div class="sum-label">Total Rouge</div><div class="sum-val">${totalScore('red')}</div></div>
+    <div class="sum-box"><div class="sum-label">Vainqueur</div><div class="sum-val">${m.winner?m.winner==='red'?REC.redName:REC.blueName:'—'}</div></div>
+    <div class="sum-box"><div class="sum-label">Total Bleu</div><div class="sum-val">${totalScore('blue')}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>R</th><th>Côté</th><th>Action</th><th>Pts</th><th>Chrono</th><th>Heure</th><th>Cumul R</th><th>Cumul B</th></tr></thead>
+    <tbody>
+    ${(()=>{let rC=0,bC=0;return REC.events.map(e=>{
+      if(e.side==='red')rC+=e.pts;else bC+=e.pts;
+      return`<tr><td>R${e.round}</td><td>${e.side==='red'?'ROUGE':'BLEU'}</td>
+      <td>${TYPE_LABELS[e.type]||e.type}</td><td>+${e.pts}</td>
+      <td>${fmtTime(e.timer)}</td>
+      <td>${e.ts?new Date(e.ts).toLocaleTimeString('fr-FR'):''}</td>
+      <td>${rC}</td><td>${bC}</td></tr>`;
+    }).join('')})()}
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Round</th><th>Score Rouge</th><th>Score Bleu</th><th>Vainqueur</th><th>Adm. R</th><th>Adm. B</th><th>Aver. R</th><th>Aver. B</th></tr></thead>
+    <tbody>
+    ${results.map(r=>`<tr>
+      <td>Round ${r.round}</td><td>${r.red}</td><td>${r.blue}</td>
+      <td>${r.winner==='red'?REC.redName:r.winner==='blue'?REC.blueName:'ÉGALITÉ'}</td>
+      <td>${m.redAdmon||0}</td><td>${m.blueAdmon||0}</td>
+      <td>${m.redWarn||0}</td><td>${m.blueWarn||0}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="sign-line">
+    <div class="sig">Signature Recorder: ${REC.recorderName||'___________________________'}<br><br>Date: ${new Date().toLocaleDateString('fr-FR')}</div>
+    <div class="sig">Signature Juge en Chef: ___________________________<br><br>Date: ${new Date().toLocaleDateString('fr-FR')}</div>
+  </div>
+  </body></html>`);
+  w.document.close();
+  w.print();
+}
+
+// ── SETUP ──
+function openSetup(){
+  document.getElementById('cfg-recorder').value=REC.recorderName;
+  document.getElementById('cfg-cat').value=REC.category;
+  document.getElementById('setup-overlay').style.display='flex';
+}
+function closeSetup(){document.getElementById('setup-overlay').style.display='none';}
+function saveSetup(){
+  REC.recorderName=document.getElementById('cfg-recorder').value;
+  REC.category=document.getElementById('cfg-cat').value;
+  closeSetup();renderAll();
+}
+
+// ── SYNC FROM CHEF DE TABLE ──
+function syncFromMaster(){
+  const t=SP.store.get('sanda_timer');
+  const m=SP.store.get('sanda_match');
+  if(t){
+    REC.round=t.round||REC.round;
+    REC.timer=t.timer;
+    const te=document.getElementById('ms-timer');
+    te.textContent=fmtTime(t.timer);
+    te.classList.toggle('danger',t.timer<=30);
+    document.getElementById('ms-round').textContent=`ROUND ${t.round||1} / 3`;
+    document.getElementById('hd-round-pill').textContent=`R${t.round||1}`;
+  }
+  if(m){
+    if(m.redName) REC.redName=m.redName;
+    if(m.blueName) REC.blueName=m.blueName;
+    if(m.category) REC.category=m.category;
+    renderAll();
+  }
+}
+
+
+
+SP.onSync((key)=>{ if(['sanda_match','sanda_timer','sanda_recorder','sanda_recorder_signed'].includes(key)) { try { update(); } catch(e){} } });
+window.addEventListener('storage',e=>{
+  if(['sanda_timer','sanda_match'].includes(e.key)) syncFromMaster();
+});
+setInterval(()=>{syncFromMaster();renderJudgeVerdicts();},2000);
+
+// ── INIT ──
+syncFromMaster();
+renderAll();
+</script>
+</body>
+</html>
