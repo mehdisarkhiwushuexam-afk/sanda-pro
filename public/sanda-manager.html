@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<link rel="stylesheet" href="shared.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SANDA MANAGER — IWUF 2024</title>
@@ -1321,7 +1320,6 @@ tbody td { padding: 10px 12px; vertical-align: middle; }
   </div>
 </div>
 
-<script src="shared.js"></script>
 <script>
 // ══════════════════════════════════════
 //  DATA
@@ -1528,7 +1526,6 @@ function addScore(side, pts, desc) {
   else { blueScore += pts; document.getElementById('blue-score').textContent = blueScore; }
   logEvent(`${side === 'red' ? '🔴' : '🔵'} ${desc}`, `+${pts}pt${pts>1?'s':''}`);
   broadcastMatchState();
-}
 }
 
 function addPenalty(side, type) {
