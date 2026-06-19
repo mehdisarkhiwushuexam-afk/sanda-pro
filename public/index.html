@@ -1,18 +1,796 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#080b10" />
-    <meta name="description" content="Sanda Pro — Gestionnaire de compétition Wushu Sanda IWUF 2024" />
-    <title>Sanda Pro | IWUF 2024</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #080b10; }
-    </style>
-  </head>
-  <body>
-    <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANDA PRO — Hub de Compétition IWUF 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#04060e;--s1:#080d1a;--s2:#0e1525;--s3:#141d30;
+  --b1:#1a2438;--b2:#233050;
+  --acc:#c9f135;--red:#ff2d55;--blue:#0af;--green:#35f5a0;
+  --gold:#ffd60a;--warn:#ff9500;--purple:#a855f7;
+  --txt:#eef2ff;--muted:#3d4d70;--muted2:#6a7a9a;
+  --disp:'Bebas Neue',sans-serif;--font:'IBM Plex Mono',monospace;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:var(--font)}
+body{
+  background-image:
+    radial-gradient(ellipse at 20% 0%,rgba(201,241,53,.04) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,rgba(0,170,255,.03) 0%,transparent 50%),
+    linear-gradient(180deg,#04060e 0%,#040509 100%);
+  overflow-x:hidden;
+}
+
+/* ── HEADER ── */
+header{
+  border-bottom:1px solid var(--b1);
+  padding:20px 40px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+  background:rgba(4,6,14,.9);backdrop-filter:blur(20px);
+}
+.logo-wrap{display:flex;align-items:center;gap:14px}
+.logo-icon{
+  width:48px;height:48px;background:var(--acc);color:#000;
+  font-family:var(--disp);font-size:20px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;letter-spacing:1px;
+  box-shadow:0 0 30px rgba(201,241,53,.25);
+}
+.logo-text-main{font-family:var(--disp);font-size:28px;letter-spacing:4px;line-height:1}
+.logo-text-sub{font-size:10px;color:var(--muted2);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.hd-center{text-align:center}
+.hd-match-name{font-family:var(--disp);font-size:18px;letter-spacing:3px;color:var(--acc)}
+.hd-match-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:2px}
+.hd-right{display:flex;align-items:center;gap:12px}
+.live-indicator{display:flex;align-items:center;gap:6px;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;color:var(--muted2)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.live-dot.active{background:var(--red);animation:livePulse 1s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,45,85,.6)}50%{box-shadow:0 0 0 6px rgba(255,45,85,0)}}
+.hd-clock{font-family:var(--disp);font-size:20px;letter-spacing:2px;color:var(--muted2)}
+
+/* ── LIVE STATUS BAR ── */
+.status-bar{
+  background:var(--s1);border-bottom:1px solid var(--b1);
+  padding:10px 40px;
+  display:flex;align-items:center;gap:24px;overflow-x:auto;
+}
+.sb-item{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
+.sb-label{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.sb-val{font-family:var(--disp);font-size:18px;letter-spacing:1px}
+.sb-val.red{color:var(--red)}
+.sb-val.blue{color:var(--blue)}
+.sb-val.acc{color:var(--acc)}
+.sb-sep{width:1px;height:28px;background:var(--b1);flex-shrink:0}
+.sb-timer{font-family:var(--disp);font-size:28px;letter-spacing:-1px;color:var(--txt)}
+.sb-timer.danger{color:var(--red);animation:blink .6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.sb-status{font-size:10px;letter-spacing:2px;font-weight:700;padding:3px 10px;
+  border-radius:10px;text-transform:uppercase}
+.sb-status.active{background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+.sb-status.paused{background:rgba(255,149,0,.1);color:var(--warn);border:1px solid rgba(255,149,0,.3)}
+.sb-status.ready{background:rgba(201,241,53,.08);color:var(--acc);border:1px solid rgba(201,241,53,.2)}
+.sb-status.finished{background:rgba(53,245,160,.08);color:var(--green);border:1px solid rgba(53,245,160,.2)}
+
+/* ── MAIN GRID ── */
+main{padding:32px 40px;max-width:1200px;margin:0 auto}
+
+/* ── SECTION TITLES ── */
+.section{margin-bottom:32px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.section-title{font-family:var(--disp);font-size:22px;letter-spacing:3px;color:var(--txt)}
+.section-sub{font-size:11px;color:var(--muted);letter-spacing:1px}
+.section-line{flex:1;height:1px;background:var(--b1)}
+
+/* ── INTERFACE CARDS ── */
+.cards-grid{display:grid;gap:14px}
+.cards-grid-2{grid-template-columns:repeat(2,1fr)}
+.cards-grid-3{grid-template-columns:repeat(3,1fr)}
+.cards-grid-5{grid-template-columns:repeat(5,1fr)}
+
+.iface-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  overflow:hidden;transition:all .2s;cursor:pointer;text-decoration:none;
+  display:flex;flex-direction:column;position:relative;
+}
+.iface-card:hover{transform:translateY(-3px);border-color:var(--b2);
+  box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.iface-card::before{content:'';position:absolute;inset:0;opacity:0;
+  transition:opacity .2s;border-radius:14px}
+
+/* Color variants */
+.c-acc .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(201,241,53,.06) 0%,transparent 60%)}
+.c-acc .iface-card:hover{border-color:rgba(201,241,53,.3);}
+.c-acc .iface-card:hover::before{opacity:1}
+.c-acc .card-accent{color:var(--acc)}
+
+.c-red .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(255,45,85,.06) 0%,transparent 60%)}
+.c-red .iface-card:hover{border-color:rgba(255,45,85,.3)}
+.c-red .iface-card:hover::before{opacity:1}
+.c-red .card-accent{color:var(--red)}
+
+.c-blue .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(0,170,255,.06) 0%,transparent 60%)}
+.c-blue .iface-card:hover{border-color:rgba(0,170,255,.3)}
+.c-blue .iface-card:hover::before{opacity:1}
+.c-blue .card-accent{color:var(--blue)}
+
+.c-green .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(53,245,160,.06) 0%,transparent 60%)}
+.c-green .iface-card:hover{border-color:rgba(53,245,160,.3)}
+.c-green .iface-card:hover::before{opacity:1}
+.c-green .card-accent{color:var(--green)}
+
+.c-gold .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(255,214,10,.06) 0%,transparent 60%)}
+.c-gold .iface-card:hover{border-color:rgba(255,214,10,.3)}
+.c-gold .iface-card:hover::before{opacity:1}
+.c-gold .card-accent{color:var(--gold)}
+
+.c-warn .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(255,149,0,.06) 0%,transparent 60%)}
+.c-warn .iface-card:hover{border-color:rgba(255,149,0,.3)}
+.c-warn .iface-card:hover::before{opacity:1}
+.c-warn .card-accent{color:var(--warn)}
+
+.c-purple .iface-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(168,85,247,.06) 0%,transparent 60%)}
+.c-purple .iface-card:hover{border-color:rgba(168,85,247,.3)}
+.c-purple .iface-card:hover::before{opacity:1}
+.c-purple .card-accent{color:var(--purple)}
+
+/* Card inner layout */
+.card-top{padding:20px 20px 14px;position:relative;z-index:1}
+.card-icon{font-size:32px;margin-bottom:10px;line-height:1}
+.card-title{font-family:var(--disp);font-size:20px;letter-spacing:2px;
+  margin-bottom:3px;line-height:1}
+.card-sub{font-size:11px;color:var(--muted2);line-height:1.4;letter-spacing:.3px}
+.card-art{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px}
+
+.card-bottom{
+  padding:10px 20px 14px;border-top:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;position:relative;z-index:1;
+}
+.card-status{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.card-status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.card-status-dot.online{background:var(--green);box-shadow:0 0 6px rgba(53,245,160,.6)}
+.card-status-dot.active{background:var(--red);animation:livePulse 1s infinite}
+.card-open{font-family:var(--disp);font-size:14px;letter-spacing:1px;
+  padding:5px 14px;border-radius:8px;border:none;cursor:pointer;transition:all .15s}
+.card-open:active{transform:scale(.97)}
+
+/* ── MATCH SETUP WIDGET ── */
+.match-setup{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  padding:20px;margin-bottom:28px;
+}
+.ms-title{font-family:var(--disp);font-size:18px;letter-spacing:2px;color:var(--acc);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px}
+.ms-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+.ms-group{display:flex;flex-direction:column;gap:4px}
+.ms-label{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.ms-inp{background:var(--s2);border:1px solid var(--b1);border-radius:8px;
+  padding:9px 12px;color:var(--txt);font-family:var(--font);font-size:12px;
+  outline:none;width:100%;transition:border-color .15s}
+.ms-inp:focus{border-color:var(--acc)}
+.ms-btn{background:var(--acc);color:#000;border:none;border-radius:8px;
+  padding:9px 20px;font-family:var(--disp);font-size:16px;letter-spacing:2px;
+  cursor:pointer;white-space:nowrap;transition:all .15s}
+.ms-btn:active{background:#d4fb3c;transform:scale(.98)}
+.ms-row2{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
+
+/* ── LIVE JUDGES STATUS ── */
+.judges-status{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  padding:18px 20px;margin-bottom:28px;
+}
+.js-title{font-family:var(--disp);font-size:16px;letter-spacing:2px;color:var(--muted2);
+  margin-bottom:12px}
+.js-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.js-card{background:var(--s2);border:1px solid var(--b1);border-radius:10px;
+  padding:10px 8px;text-align:center;transition:border-color .2s}
+.js-card.submitted{border-color:rgba(201,241,53,.35);background:rgba(201,241,53,.04)}
+.js-num{font-family:var(--disp);font-size:22px;color:var(--muted);margin-bottom:4px}
+.js-verdict{font-family:var(--disp);font-size:14px;letter-spacing:1px}
+.js-verdict.red{color:var(--red)}
+.js-verdict.blue{color:var(--blue)}
+.js-verdict.draw{color:var(--acc)}
+.js-verdict.wait{color:var(--muted);font-size:11px}
+.js-scores{font-size:10px;color:var(--muted2);margin-top:2px}
+.js-badge{font-size:9px;letter-spacing:.5px;font-weight:700;
+  padding:1px 6px;border-radius:8px;margin-top:4px;display:inline-block}
+.js-badge.ok{background:rgba(201,241,53,.12);color:var(--acc)}
+.js-badge.wait{background:var(--b1);color:var(--muted)}
+
+/* ── RESET BUTTON ── */
+.danger-zone{background:var(--s1);border:1px solid rgba(255,45,85,.2);border-radius:14px;
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px}
+.dz-info{display:flex;flex-direction:column;gap:3px}
+.dz-title{font-size:13px;font-weight:600;color:var(--red)}
+.dz-sub{font-size:11px;color:var(--muted)}
+.dz-btn{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.3);color:var(--red);
+  border-radius:8px;padding:8px 18px;font-family:var(--disp);font-size:15px;
+  letter-spacing:1px;cursor:pointer;transition:all .15s}
+.dz-btn:hover{background:rgba(255,45,85,.2)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--b1);padding:20px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--muted)}
+.ft-brand{font-family:var(--disp);font-size:14px;letter-spacing:3px;color:var(--muted2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">散打</div>
+    <div>
+      <div class="logo-text-main">SANDA PRO</div>
+      <div class="logo-text-sub">Système de Gestion IWUF 2024</div>
+    </div>
+  </div>
+  <div class="hd-center">
+    <div class="hd-match-name" id="hd-match-name">AUCUN MATCH ACTIF</div>
+    <div class="hd-match-sub" id="hd-match-sub">Configurez un match pour commencer</div>
+  </div>
+  <div class="hd-right">
+    <div class="live-indicator">
+      <div class="live-dot" id="live-dot"></div>
+      <span id="live-txt">HORS LIGNE</span>
+    </div>
+    <div class="hd-clock" id="hd-clock">--:--:--</div>
+  </div>
+</header>
+
+<!-- LIVE STATUS BAR -->
+<div class="status-bar">
+  <div class="sb-item">
+    <div class="sb-label">STATUT</div>
+    <span class="sb-status ready" id="sb-status">PRÊT</span>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item">
+    <div class="sb-label">ROUND</div>
+    <div class="sb-val acc" id="sb-round">—</div>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item">
+    <div class="sb-label">CHRONO</div>
+    <div class="sb-timer" id="sb-timer">—</div>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item">
+    <div class="sb-label">ROUGE</div>
+    <div class="sb-val red" id="sb-red">0</div>
+  </div>
+  <div class="sb-item" style="font-family:var(--disp);font-size:18px;color:var(--muted)">–</div>
+  <div class="sb-item">
+    <div class="sb-label">BLEU</div>
+    <div class="sb-val blue" id="sb-blue">0</div>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item">
+    <div class="sb-label">ROUNDS GAGNÉS</div>
+    <div class="sb-val red" id="sb-rr">0</div>
+    <div style="color:var(--muted);font-family:var(--disp);font-size:16px;margin:0 4px">–</div>
+    <div class="sb-val blue" id="sb-rb">0</div>
+  </div>
+  <div class="sb-sep"></div>
+  <div class="sb-item">
+    <div class="sb-label">JUGES SOUMIS</div>
+    <div class="sb-val acc" id="sb-judges">0/3</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- MATCH SETUP -->
+  <div class="match-setup">
+    <div class="ms-title">⚡ CONFIGURATION RAPIDE DU MATCH</div>
+    <div class="ms-form">
+      <div class="ms-group">
+        <label class="ms-label">Compétiteur Rouge</label>
+        <input class="ms-inp" id="cfg-red" placeholder="Nom Rouge">
+      </div>
+      <div class="ms-group">
+        <label class="ms-label">Compétiteur Bleu</label>
+        <input class="ms-inp" id="cfg-blue" placeholder="Nom Bleu">
+      </div>
+      <div class="ms-group">
+        <label class="ms-label">Catégorie</label>
+        <input class="ms-inp" id="cfg-cat" placeholder="Ex: Adultes H 70kg">
+      </div>
+      <button class="ms-btn" onclick="setupMatch()">LANCER ▶</button>
+    </div>
+    <div class="ms-row2">
+      <div class="ms-group">
+        <label class="ms-label">Équipe Rouge</label>
+        <input class="ms-inp" id="cfg-red-team" placeholder="Pays/Équipe">
+      </div>
+      <div class="ms-group">
+        <label class="ms-label">Équipe Bleue</label>
+        <input class="ms-inp" id="cfg-blue-team" placeholder="Pays/Équipe">
+      </div>
+      <div class="ms-group">
+        <label class="ms-label">Nombre de juges</label>
+        <select class="ms-inp" id="cfg-judges">
+          <option value="3">3 Juges de côté</option>
+          <option value="5">5 Juges de côté</option>
+        </select>
+      </div>
+      <div class="ms-group">
+        <label class="ms-label">Durée du round</label>
+        <select class="ms-inp" id="cfg-duration">
+          <option value="120">2:00 min — Adultes/Jeunes</option>
+          <option value="90">1:30 min — Enfants/Juniors</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUDGES STATUS -->
+  <div class="judges-status">
+    <div class="js-title">VERDICTS JUGES DE CÔTÉ — ROUND EN COURS</div>
+    <div class="js-grid" id="judges-grid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- SECTION: GESTION & DIRECTION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">GESTION & DIRECTION</div>
+      <div class="section-line"></div>
+      <div class="section-sub">Interfaces de contrôle central</div>
+    </div>
+    <div class="cards-grid cards-grid-2">
+
+      <div class="c-acc">
+        <a class="iface-card" href="chef-de-table.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">🎯</div>
+            <div class="card-title card-accent">CHEF DE TABLE</div>
+            <div class="card-sub">Contrôle total du match — chronomètre, pénalités, lecture forcée, déclaration du vainqueur</div>
+            <div class="card-art">Art. 16.3 — IWUF 2024</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot" id="dot-chef"></div>
+              <span id="status-chef">Inactif</span>
+            </div>
+            <button class="card-open" style="background:var(--acc);color:#000">OUVRIR →</button>
+          </div>
+        </a>
+      </div>
+
+      <div class="c-purple">
+        <a class="iface-card" href="sanda-manager.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">📊</div>
+            <div class="card-title card-accent">CRM & MANAGER</div>
+            <div class="card-sub">Inscriptions, pesée officielle, tirage au sort, brackets, classements, formulaires IWUF</div>
+            <div class="card-art">Art. 16.9 — Appendix 7-9 — IWUF 2024</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot online"></div>
+              <span>Disponible</span>
+            </div>
+            <button class="card-open" style="background:var(--purple);color:#fff">OUVRIR →</button>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION: JUGES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">JUGES DE CÔTÉ</div>
+      <div class="section-line"></div>
+      <div class="section-sub">Ouvrir une instance par juge (tablette séparée)</div>
+    </div>
+    <div class="cards-grid cards-grid-5">
+      <div class="c-blue">
+        <a class="iface-card" href="juge-de-coin.html?j=1" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title card-accent">JUGE #1</div>
+            <div class="card-sub">Score + verdict round</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status"><div class="card-status-dot" id="dot-j1"></div><span id="status-j1">—</span></div>
+            <button class="card-open" style="background:var(--blue);color:#000">→</button>
+          </div>
+        </a>
+      </div>
+      <div class="c-blue">
+        <a class="iface-card" href="juge-de-coin.html?j=2" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title card-accent">JUGE #2</div>
+            <div class="card-sub">Score + verdict round</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status"><div class="card-status-dot" id="dot-j2"></div><span id="status-j2">—</span></div>
+            <button class="card-open" style="background:var(--blue);color:#000">→</button>
+          </div>
+        </a>
+      </div>
+      <div class="c-blue">
+        <a class="iface-card" href="juge-de-coin.html?j=3" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title card-accent">JUGE #3</div>
+            <div class="card-sub">Score + verdict round</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status"><div class="card-status-dot" id="dot-j3"></div><span id="status-j3">—</span></div>
+            <button class="card-open" style="background:var(--blue);color:#000">→</button>
+          </div>
+        </a>
+      </div>
+      <div class="c-blue">
+        <a class="iface-card" href="juge-de-coin.html?j=4" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title card-accent">JUGE #4</div>
+            <div class="card-sub">Score + verdict round</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status"><div class="card-status-dot" id="dot-j4"></div><span id="status-j4">—</span></div>
+            <button class="card-open" style="background:var(--blue);color:#000">→</button>
+          </div>
+        </a>
+      </div>
+      <div class="c-blue">
+        <a class="iface-card" href="juge-de-coin.html?j=5" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title card-accent">JUGE #5</div>
+            <div class="card-sub">Score + verdict round</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status"><div class="card-status-dot" id="dot-j5"></div><span id="status-j5">—</span></div>
+            <button class="card-open" style="background:var(--blue);color:#000">→</button>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: OFFICIEL & MÉDICAL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">OFFICIELS & MÉDICAL</div>
+      <div class="section-line"></div>
+    </div>
+    <div class="cards-grid cards-grid-3">
+
+      <div class="c-green">
+        <a class="iface-card" href="recorder.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">📋</div>
+            <div class="card-title card-accent">RECORDER OFFICIEL</div>
+            <div class="card-sub">Enregistrement officiel des points, pénalités et résultats. Impression Appendix 10</div>
+            <div class="card-art">Art. 16.7 — Appendix 10 — IWUF 2024</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot" id="dot-rec"></div>
+              <span id="status-rec">Inactif</span>
+            </div>
+            <button class="card-open" style="background:var(--green);color:#000">OUVRIR →</button>
+          </div>
+        </a>
+      </div>
+
+      <div class="c-warn">
+        <a class="iface-card" href="arbitre-medecin.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">🏥</div>
+            <div class="card-title card-accent">ARBITRE / MÉDECIN</div>
+            <div class="card-sub">Urgences médicales, blessures, contrôle antidopage, arrêt du match</div>
+            <div class="card-art">Art. 16.14 — Art. 23.3 — IWUF 2024</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot" id="dot-med"></div>
+              <span id="status-med">Inactif</span>
+            </div>
+            <button class="card-open" style="background:var(--warn);color:#000">OUVRIR →</button>
+          </div>
+        </a>
+      </div>
+
+      <div class="c-gold">
+        <a class="iface-card" href="annonceur.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">🎙</div>
+            <div class="card-title card-accent">ANNONCEUR</div>
+            <div class="card-sub">Scripts d'annonce FR/AR, résultats en temps réel, synthèse vocale (TTS)</div>
+            <div class="card-art">Art. 16.13 — IWUF 2024</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot online"></div>
+              <span>Disponible</span>
+            </div>
+            <button class="card-open" style="background:var(--gold);color:#000">OUVRIR →</button>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION: AFFICHAGE PUBLIC -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">AFFICHAGE PUBLIC</div>
+      <div class="section-line"></div>
+      <div class="section-sub">Projeter sur grand écran / TV</div>
+    </div>
+    <div class="cards-grid cards-grid-2">
+
+      <div class="c-red">
+        <a class="iface-card" href="tableau-public.html" target="_blank">
+          <div class="card-top">
+            <div class="card-icon">📺</div>
+            <div class="card-title card-accent">TABLEAU D'AFFICHAGE</div>
+            <div class="card-sub">Scoreboard grand format pour le public — scores, chrono, rounds, statistiques. Optimisé pour projecteur / TV 1080p</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot" id="dot-pub"></div>
+              <span id="status-pub">En attente du match</span>
+            </div>
+            <button class="card-open" style="background:var(--red);color:#fff">PROJETER →</button>
+          </div>
+        </a>
+      </div>
+
+      <div class="c-blue">
+        <div class="iface-card" onclick="openFullscreen()">
+          <div class="card-top">
+            <div class="card-icon">🖥</div>
+            <div class="card-title card-accent">PLEIN ÉCRAN TV</div>
+            <div class="card-sub">Ouvre le tableau public en plein écran. Idéal pour les affichages dans la salle de compétition</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-status">
+              <div class="card-status-dot online"></div>
+              <span>Prêt</span>
+            </div>
+            <button class="card-open" style="background:var(--blue);color:#000">PLEIN ÉCRAN →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="danger-zone">
+    <div class="dz-info">
+      <div class="dz-title">⚠ Réinitialiser le match en cours</div>
+      <div class="dz-sub">Efface toutes les données du match actuel (scores, événements, verdicts). Les inscriptions CRM ne sont pas affectées.</div>
+    </div>
+    <button class="dz-btn" onclick="confirmReset()">RESET MATCH</button>
+  </div>
+
+</main>
+
+<footer>
+  <div class="ft-brand">SANDA PRO</div>
+  <div>Toutes les interfaces communiquent via localStorage partagé</div>
+  <div>🥋 Conforme Règlement IWUF 2024</div>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+const fmt2 = n => String(n).padStart(2,'0');
+
+// ── CLOCK ──
+setInterval(()=>{
+  const n=new Date();
+  document.getElementById('hd-clock').textContent=
+    `${fmt2(n.getHours())}:${fmt2(n.getMinutes())}:${fmt2(n.getSeconds())}`;
+},1000);
+
+// ── MATCH SETUP ──
+function setupMatch(){
+  const red  = document.getElementById('cfg-red').value.trim()||'Compétiteur Rouge';
+  const blue = document.getElementById('cfg-blue').value.trim()||'Compétiteur Bleu';
+  const cat  = document.getElementById('cfg-cat').value.trim()||'SANDA IWUF 2024';
+  const rTeam= document.getElementById('cfg-red-team').value.trim();
+  const bTeam= document.getElementById('cfg-blue-team').value.trim();
+  const jc   = parseInt(document.getElementById('cfg-judges').value)||3;
+  const dur  = parseInt(document.getElementById('cfg-duration').value)||120;
+
+  const matchData = {
+    redName:red, blueName:blue, category:cat,
+    redTeam:rTeam, blueTeam:bTeam,
+    judgeCount:jc, roundDuration:dur,
+    redScores:[0,0,0], blueScores:[0,0,0],
+    redRoundsWon:0, blueRoundsWon:0,
+    redAdmon:0, blueAdmon:0, redWarn:0, blueWarn:0,
+    redForcible:0, blueForcible:0,
+    redOffPlatform:0, blueOffPlatform:0,
+    roundResults:[], winner:null,
+    status:'ready', ts:Date.now()
+  };
+
+  const timerData = {
+    timer:dur, round:1, status:'ready', ts:Date.now()
+  };
+
+  SP.bc.publish('sanda_match', matchData);
+  SP.bc.publish('sanda_timer', timerData);
+
+  // Clear previous judge verdicts
+  for(let i=1;i<=5;i++){
+    for(let r=1;r<=3;r++) SP.store.remove(`sanda_j${i}_r${r}`);
+  }
+  SP.store.remove('sanda_stop');
+  SP.store.remove('sanda_injury');
+  SP.store.remove('sanda_recorder');
+  SP.store.remove('sanda_recorder_signed');
+
+  SP.toast(`✓ Match configuré — ${red.toUpperCase()} vs ${blue.toUpperCase()}`, 'var(--acc)', '#000');
+  update();
+}
+
+// ── RESET ──
+async function confirmReset(){
+  const ok = await SP.confirm({
+    icon: '⚠️',
+    title: 'RESET MATCH',
+    body: 'Réinitialiser tout le match en cours ?\nScores, événements et verdicts seront effacés.\nLes inscriptions CRM ne sont pas affectées.',
+    confirmLabel: 'RESET',
+    confirmClass: ''
+  });
+  if(ok) resetMatch();
+}
+
+function resetMatch(){
+  const keys=['sanda_match','sanda_timer','sanda_stop','sanda_injury','sanda_recorder','sanda_recorder_signed'];
+  keys.forEach(k=>SP.store.remove(k));
+  for(let i=1;i<=5;i++) for(let r=1;r<=3;r++) SP.store.remove(`sanda_j${i}_r${r}`);
+  SP.bc.publish('sanda_match', null);
+  SP.bc.publish('sanda_timer', null);
+  SP.toast('↺ Match réinitialisé', 'var(--warn)', '#000');
+  update();
+}
+
+// ── OPEN FULLSCREEN ──
+// Ouvre tableau-public dans une nouvelle fenêtre.
+// Le fullscreen doit être déclenché par l'utilisateur DANS le nouvel onglet.
+// On passe un flag via URL pour que tableau-public.html propose le plein écran.
+function openFullscreen(){
+  window.open('tableau-public.html?fullscreen=1','_blank');
+}
+
+// ── UPDATE STATUS ──
+function update(){
+  const m = SP.store.get('sanda_match');
+  const t = SP.store.get('sanda_timer');
+
+  // Live dot
+  const live = t && t.status==='active';
+  const paused = t && t.status==='paused';
+  const finished = m && m.status==='finished';
+  document.getElementById('live-dot').className = `live-dot${live?' active':''}`;
+  document.getElementById('live-txt').textContent = live?'EN DIRECT':paused?'PAUSE':finished?'TERMINÉ':'HORS LIGNE';
+
+  if(t){
+    const mins=Math.floor(t.timer/60), secs=fmt2(t.timer%60);
+    const st=document.getElementById('sb-timer');
+    st.textContent=`${mins}:${secs}`;
+    st.classList.toggle('danger',t.timer<=30&&t.timer>0);
+    document.getElementById('sb-round').textContent=`R${t.round||1}`;
+    const statusEl=document.getElementById('sb-status');
+    const sm={active:{c:'active',l:'EN COURS'},paused:{c:'paused',l:'PAUSE'},
+              ready:{c:'ready',l:'PRÊT'},finished:{c:'finished',l:'TERMINÉ'}};
+    const sv=sm[t.status]||sm.ready;
+    statusEl.className=`sb-status ${sv.c}`;
+    statusEl.textContent=sv.l;
+  }
+
+  if(m){
+    const ri=(t?.round||1)-1;
+    document.getElementById('sb-red').textContent=m.redScores?.[ri]||0;
+    document.getElementById('sb-blue').textContent=m.blueScores?.[ri]||0;
+    document.getElementById('sb-rr').textContent=m.redRoundsWon||0;
+    document.getElementById('sb-rb').textContent=m.blueRoundsWon||0;
+    document.getElementById('hd-match-name').textContent=
+      `${(m.redName||'ROUGE').toUpperCase()} VS ${(m.blueName||'BLEU').toUpperCase()}`;
+    document.getElementById('hd-match-sub').textContent=
+      `${(m.category||'').toUpperCase()} • ${m.judgeCount||3} Juges`;
+
+    // Pre-fill config form if empty
+    if(!document.getElementById('cfg-red').value && m.redName)
+      document.getElementById('cfg-red').value=m.redName;
+    if(!document.getElementById('cfg-blue').value && m.blueName)
+      document.getElementById('cfg-blue').value=m.blueName;
+    if(!document.getElementById('cfg-cat').value && m.category)
+      document.getElementById('cfg-cat').value=m.category;
+  }
+
+  // Judge verdicts
+  updateJudges(m, t);
+
+  // Card status indicators
+  const recSig = SP.store.get('sanda_recorder_signed');
+  if(recSig){
+    document.getElementById('dot-rec').className='card-status-dot active';
+    document.getElementById('status-rec').textContent='En service';
+  }
+  const medStop = SP.store.get('sanda_stop');
+  if(medStop && Date.now()-medStop.time < 30000){
+    document.getElementById('dot-med').className='card-status-dot active';
+    document.getElementById('status-med').textContent='Actif — '+medStop.type;
+  }
+  if(t && t.status!=='ready'){
+    document.getElementById('dot-chef').className='card-status-dot active';
+    document.getElementById('status-chef').textContent=t.status==='active'?'En cours':'Pause';
+    document.getElementById('dot-pub').className='card-status-dot active';
+    document.getElementById('status-pub').textContent='Diffusion en direct';
+  }
+}
+
+function updateJudges(m, t){
+  const jc = m?.judgeCount||3;
+  const round = t?.round||1;
+  let submitted=0;
+  let html='';
+  for(let i=1;i<=Math.max(jc,5);i++){
+    const d=SP.store.get(`sanda_j${i}_r${round}`);
+    const sub=d&&d.round===round;
+    const inactive=i>jc;
+    if(sub) submitted++;
+    const vcolor=!sub?'':'red'===d.verdict?'red':'blue'===d.verdict?'blue':'draw';
+    const vtxt=!sub?'':'red'===d.verdict?(m?.redName||'Rouge').slice(0,8).toUpperCase():
+      'blue'===d.verdict?(m?.blueName||'Bleu').slice(0,8).toUpperCase():'ÉGALITÉ';
+    html+=`<div class="js-card${sub?' submitted':''}${inactive?' ':''}" style="${inactive?'opacity:.3':''}">
+      <div class="js-num">${i}</div>
+      ${sub
+        ?`<div class="js-verdict ${vcolor}">${vtxt}</div>
+           <div class="js-scores">${d.red} — ${d.blue}</div>
+           <span class="js-badge ok">✓ SOUMIS</span>`
+        :`<div class="js-verdict wait">${inactive?'N/A':'attente'}</div>
+           <span class="js-badge wait">${inactive?'—':'en cours'}</span>`}
+    </div>`;
+    if(i===jc&&jc<5) break;
+  }
+  document.getElementById('judges-grid').innerHTML=html;
+
+  // Judge dots
+  for(let i=1;i<=5;i++){
+    const d=SP.store.get(`sanda_j${i}_r${round}`);
+    const sub=d&&d.round===round;
+    const dotEl=document.getElementById(`dot-j${i}`);
+    const stEl=document.getElementById(`status-j${i}`);
+    if(dotEl){
+      dotEl.className='card-status-dot'+(sub?' active':i<=jc?' online':'');
+      if(stEl) stEl.textContent=sub?'✓ Soumis':i<=jc?'Actif':'N/A';
+    }
+  }
+
+  // Judges count
+  document.getElementById('sb-judges').textContent=`${submitted}/${jc}`;
+}
+
+// BroadcastChannel sync + storage event → update immédiat
+SP.onSync((key) => {
+  if(['sanda_match','sanda_timer'].includes(key)) update();
+});
+
+setInterval(update, 1000);
+update();
+</script>
+</body>
 </html>
